@@ -140,9 +140,10 @@ button{flex:1;padding:15px;border:none;border-radius:12px;font-size:1rem;font-we
 <div class="stat-label">💰 Puntos</div>
 <div class="stat-value" id="pts">0</div>
 </div>
-<div class="stat" id="huchaCard">
+<div class="stat" id="huchaCard" style="cursor:pointer" onclick="abrirHucha()">
 <div class="stat-label" id="huchaLabel">🏦 Hucha</div>
 <div class="stat-value" id="hucha">0€</div>
+<div style="font-size:.5rem;color:rgba(255,255,255,.4);margin-top:2px">toca para gestionar</div>
 </div>
 <div class="stat">
 <div class="stat-label">✅ Completadas</div>
@@ -1605,6 +1606,133 @@ state.history.push({icon:r.icon,text:'🎁 '+r.text,photo:'',pts:0,cat:'premio',
 save();update();
 try{sndPrize();launchConfetti();}catch(e){}
 return r;
+}
+
+function abrirHucha(){
+var saldo=huchaActual();
+var ov=document.createElement('div');
+ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:600;display:flex;align-items:center;justify-content:center;padding:18px;overflow-y:auto';
+var card=document.createElement('div');
+card.style.cssText='background:linear-gradient(135deg,#1a1a2e,#2C2C54);border:3px solid #2ECC71;border-radius:20px;padding:20px;max-width:330px;width:100%;text-align:center';
+card.innerHTML='<div style="font-size:2.5rem;margin-bottom:4px">🏦</div><div style="font-size:1.1rem;font-weight:900;color:#2ECC71;margin-bottom:2px">Mi Hucha</div><div style="font-size:1.8rem;font-weight:900;color:#FFD700;margin-bottom:14px">'+saldo+'€</div>';
+// Botón AHORRAR
+var aBtn=document.createElement('button');
+aBtn.style.cssText='width:100%;padding:13px;background:linear-gradient(135deg,#27AE60,#2ECC71);color:#fff;border:none;border-radius:11px;font-weight:800;cursor:pointer;margin-bottom:8px;font-size:.92rem';
+aBtn.textContent='💰 Ahorrar (meter en hucha física)';
+aBtn.addEventListener('click',function(){ov.remove();movimientoHucha('ahorrar');});
+card.appendChild(aBtn);
+// Botón GASTAR
+var gBtn=document.createElement('button');
+gBtn.style.cssText='width:100%;padding:13px;background:linear-gradient(135deg,#E67E22,#D35400);color:#fff;border:none;border-radius:11px;font-weight:800;cursor:pointer;margin-bottom:8px;font-size:.92rem';
+gBtn.textContent='🛍️ Gastar (sacar de la hucha)';
+gBtn.addEventListener('click',function(){ov.remove();movimientoHucha('gastar');});
+card.appendChild(gBtn);
+// Botones rápidos +/-
+var quick=document.createElement('div');quick.style.cssText='display:flex;gap:6px;margin-bottom:8px';
+[['+1€',1],['+5€',5],['-1€',-1],['-5€',-5]].forEach(function(q){
+var b=document.createElement('button');
+b.style.cssText='flex:1;padding:11px 0;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:9px;font-weight:800;cursor:pointer;font-size:.85rem';
+b.textContent=q[0];
+b.addEventListener('click',function(){
+if(q[1]>0){state.huchaGanada=(state.huchaGanada||0)+q[1];}
+else{state.gastos=(state.gastos||0)+Math.abs(q[1]);}
+try{save();}catch(e){}update();ov.remove();abrirHucha();
+try{sndCoin();}catch(e){}
+});
+quick.appendChild(b);
+});
+card.appendChild(quick);
+// Ajuste exacto
+var ajBtn=document.createElement('button');
+ajBtn.style.cssText='width:100%;padding:11px;background:rgba(52,152,219,.15);color:#3498DB;border:1px solid #3498DB;border-radius:10px;font-weight:700;cursor:pointer;margin-bottom:8px;font-size:.85rem';
+ajBtn.textContent='⚖️ Ajustar al total real';
+ajBtn.addEventListener('click',function(){ov.remove();ajustarHucha();});
+card.appendChild(ajBtn);
+var cBtn=document.createElement('button');
+cBtn.style.cssText='width:100%;padding:10px;background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer';
+cBtn.textContent='Cerrar';
+cBtn.addEventListener('click',function(){ov.remove();});
+card.appendChild(cBtn);
+ov.appendChild(card);document.body.appendChild(ov);
+}
+
+function movimientoHucha(tipo){
+var esAhorro=(tipo==='ahorrar');
+var saldo=huchaActual();
+var ov=document.createElement('div');
+ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:601;display:flex;align-items:center;justify-content:center;padding:18px';
+var card=document.createElement('div');
+var col=esAhorro?'#2ECC71':'#E67E22';
+card.style.cssText='background:linear-gradient(135deg,#1a1a2e,#2C2C54);border:3px solid '+col+';border-radius:20px;padding:22px;max-width:320px;width:100%;text-align:center';
+card.innerHTML='<div style="font-size:2.2rem;margin-bottom:4px">'+(esAhorro?'💰':'🛍️')+'</div><div style="font-size:1.05rem;font-weight:900;color:'+col+';margin-bottom:4px">'+(esAhorro?'Ahorrar':'Gastar')+'</div><div style="font-size:.78rem;color:rgba(255,255,255,.7);margin-bottom:12px">'+(esAhorro?'Cantidad que metes en tu hucha física':'Cantidad que sacas para gastar')+'</div>';
+var input=document.createElement('input');
+input.type='number';input.inputMode='decimal';input.min='0';input.placeholder='0';
+input.style.cssText='width:100%;padding:14px;font-size:1.4rem;text-align:center;border-radius:12px;border:2px solid '+col+';background:rgba(0,0,0,.3);color:'+col+';font-weight:800;margin-bottom:6px';
+card.appendChild(input);
+var info=document.createElement('div');info.style.cssText='font-size:.72rem;color:rgba(255,255,255,.6);margin-bottom:14px';info.textContent='Hucha actual: '+saldo+'€';card.appendChild(info);
+var okBtn=document.createElement('button');
+okBtn.style.cssText='width:100%;padding:13px;background:'+col+';color:#fff;border:none;border-radius:11px;font-weight:800;cursor:pointer;margin-bottom:8px;font-size:.9rem';
+okBtn.textContent=esAhorro?'💰 Confirmar ahorro':'🛍️ Confirmar gasto';
+okBtn.addEventListener('click',function(){
+var n=parseFloat(input.value);
+if(isNaN(n)||n<=0){toast('Pon una cantidad válida');return;}
+if(esAhorro){
+state.huchaGanada=(state.huchaGanada||0)+n;
+if(!state.history)state.history=[];
+state.history.push({icon:'💰',text:'Ahorro a hucha física',photo:'',pts:0,hucha:n,cat:'ahorro',date:new Date().toLocaleDateString(),ts:Date.now()});
+toast('💰 ¡+'+n+'€ ahorrados!');
+}else{
+if(n>saldo){toast('⚠️ Solo tienes '+saldo+'€ en la hucha');return;}
+state.gastos=(state.gastos||0)+n;
+if(!state.history)state.history=[];
+state.history.push({icon:'🛍️',text:'Gasto de la hucha',photo:'',pts:0,cat:'ahorro',date:new Date().toLocaleDateString(),ts:Date.now()});
+toast('🛍️ -'+n+'€ gastados');
+}
+try{save();}catch(e){}update();ov.remove();
+try{sndCoin();}catch(e){}
+});
+card.appendChild(okBtn);
+var cBtn=document.createElement('button');
+cBtn.style.cssText='width:100%;padding:10px;background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer';
+cBtn.textContent='Cancelar';
+cBtn.addEventListener('click',function(){ov.remove();});
+card.appendChild(cBtn);
+ov.appendChild(card);document.body.appendChild(ov);
+setTimeout(function(){try{input.focus();}catch(e){}},100);
+}
+
+function ajustarHucha(){
+var saldo=huchaActual();
+var ov=document.createElement('div');
+ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:601;display:flex;align-items:center;justify-content:center;padding:18px';
+var card=document.createElement('div');
+card.style.cssText='background:linear-gradient(135deg,#1a1a2e,#2C2C54);border:3px solid #3498DB;border-radius:20px;padding:22px;max-width:320px;width:100%;text-align:center';
+card.innerHTML='<div style="font-size:2.2rem;margin-bottom:4px">⚖️</div><div style="font-size:1.05rem;font-weight:900;color:#3498DB;margin-bottom:4px">Ajustar hucha</div><div style="font-size:.78rem;color:rgba(255,255,255,.7);margin-bottom:12px">Escribe el total REAL que tienes en tu hucha física y se corregirá</div>';
+var input=document.createElement('input');
+input.type='number';input.inputMode='decimal';input.min='0';input.value=saldo;
+input.style.cssText='width:100%;padding:14px;font-size:1.4rem;text-align:center;border-radius:12px;border:2px solid #3498DB;background:rgba(0,0,0,.3);color:#3498DB;font-weight:800;margin-bottom:6px';
+card.appendChild(input);
+var info=document.createElement('div');info.style.cssText='font-size:.72rem;color:rgba(255,255,255,.6);margin-bottom:14px';info.textContent='Ahora marca: '+saldo+'€';card.appendChild(info);
+var okBtn=document.createElement('button');
+okBtn.style.cssText='width:100%;padding:13px;background:#3498DB;color:#fff;border:none;border-radius:11px;font-weight:800;cursor:pointer;margin-bottom:8px;font-size:.9rem';
+okBtn.textContent='⚖️ Ajustar a este total';
+okBtn.addEventListener('click',function(){
+var n=parseFloat(input.value);
+if(isNaN(n)||n<0){toast('Pon una cantidad válida');return;}
+// Ajustar: fijar huchaGanada-gastos = n. Lo más simple: huchaGanada=n+gastos
+state.huchaGanada=n+(state.gastos||0);
+try{save();}catch(e){}update();ov.remove();
+try{sndCoin();}catch(e){}
+toast('⚖️ Hucha ajustada a '+n+'€');
+});
+card.appendChild(okBtn);
+var cBtn=document.createElement('button');
+cBtn.style.cssText='width:100%;padding:10px;background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer';
+cBtn.textContent='Cancelar';
+cBtn.addEventListener('click',function(){ov.remove();});
+card.appendChild(cBtn);
+ov.appendChild(card);document.body.appendChild(ov);
+setTimeout(function(){try{input.focus();input.select();}catch(e){}},100);
 }
 
 function huchaActual(){return Math.max(0,(state.huchaGanada||0)-(state.gastos||0));}
