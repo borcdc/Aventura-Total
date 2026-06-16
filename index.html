@@ -236,6 +236,7 @@ button{flex:1;padding:15px;border:none;border-radius:12px;font-size:1rem;font-we
 <button id="exportBtn" style="padding:13px;background:linear-gradient(135deg,#3498DB,#2980B9);color:#fff;border:none;border-radius:12px;font-weight:800;cursor:pointer;font-size:.9rem">📤 Exportar código de respaldo</button>
 <button id="importBtn" style="padding:13px;background:linear-gradient(135deg,#9B59B6,#8E44AD);color:#fff;border:none;border-radius:12px;font-weight:800;cursor:pointer;font-size:.9rem">📥 Importar código de respaldo</button>
 <button id="downloadPhotosBtn" style="padding:13px;background:linear-gradient(135deg,#E67E22,#D35400);color:#fff;border:none;border-radius:12px;font-weight:800;cursor:pointer;font-size:.9rem">📥 Descargar fotos al carrete</button>
+<button id="cleanPhotosBtn" style="padding:13px;background:linear-gradient(135deg,#E74C3C,#C0392B);color:#fff;border:none;border-radius:12px;font-weight:800;cursor:pointer;font-size:.9rem">🧹 Liberar espacio (borrar fotos)</button>
 <div style="margin-top:6px">
 <div style="font-size:.72rem;color:rgba(255,255,255,.6);margin-bottom:4px;display:flex;justify-content:space-between"><span>🧠 Memoria usada</span><span id="memTxt">0%</span></div>
 <div style="height:10px;background:rgba(255,255,255,.1);border-radius:5px;overflow:hidden"><div id="memBar" style="height:100%;width:0%;background:#2ECC71;transition:width .3s"></div></div>
@@ -463,6 +464,34 @@ playTone(659,0.1,'sine',0.2,0);
 playTone(988,0.18,'sine',0.2,0.09);
 }
 
+function limpiarFotos(){
+var overlay=document.createElement('div');
+overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px';
+var card=document.createElement('div');
+card.style.cssText='background:linear-gradient(135deg,#1a1a2e,#2C2C54);border:3px solid #E74C3C;border-radius:20px;padding:22px;max-width:330px;width:100%;text-align:center';
+card.innerHTML='<div style="font-size:2.5rem;margin-bottom:6px">🧹</div><div style="font-size:1.1rem;font-weight:900;color:#E74C3C;margin-bottom:8px">Liberar espacio</div><div style="font-size:.82rem;color:rgba(255,255,255,.8);margin-bottom:16px;line-height:1.4">Esto borra solo las FOTOS guardadas (no tu progreso: puntos, hucha, premios y manualidades se mantienen). Tras esto podrás guardar y exportar de nuevo.<br><br><b>Descarga antes las fotos que quieras conservar.</b></div>';
+var okBtn=document.createElement('button');
+okBtn.style.cssText='width:100%;padding:13px;background:linear-gradient(135deg,#E74C3C,#C0392B);color:#fff;border:none;border-radius:11px;font-weight:800;cursor:pointer;margin-bottom:8px;font-size:.9rem';
+okBtn.textContent='🧹 Sí, borrar fotos y liberar';
+okBtn.addEventListener('click',function(){
+var n=0;
+(state.petPhotos||[]).forEach(function(p){if(p.photo){p.photo='';n++;}});
+(state.history||[]).forEach(function(h){if(h.photo){h.photo='';n++;}});
+try{localStorage.setItem('av4',JSON.stringify(state));}catch(e){}
+update();
+try{sndDing();}catch(e){}
+overlay.remove();
+toast('🧹 ¡Liberadas '+n+' fotos! Ya puedes guardar y exportar');
+});
+card.appendChild(okBtn);
+var cancelBtn=document.createElement('button');
+cancelBtn.style.cssText='width:100%;padding:11px;background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:11px;font-weight:700;cursor:pointer';
+cancelBtn.textContent='Cancelar';
+cancelBtn.addEventListener('click',function(){overlay.remove();});
+card.appendChild(cancelBtn);
+overlay.appendChild(card);document.body.appendChild(overlay);
+}
+
 function descargarFotos(){
 var fotos=[];
 (state.petPhotos||[]).forEach(function(p){if(p.photo&&p.photo.length>50)fotos.push({src:p.photo,nombre:p.motivo||'foto'});});
@@ -600,6 +629,14 @@ try{datos=JSON.parse(txt);}catch(e2){datos=null;}
 }
 if(!datos||typeof datos!=='object'){toast('⚠️ Código no válido');return;}
 state=datos;
+// Sanear iconos de cámara antiguos (📸/📷): recuperar emoji original del premio
+if(state.history){state.history.forEach(function(h){
+if(h.icon==='📸'||h.icon==='📷'){
+var limpio=(h.text||'').replace(/^(🎁|🏆|🧘|☀️|♻️|🚫)\s*/,'').replace(/ \(\d+€[^)]*\)/,'').trim();
+var match=CARDS.find(function(c){return c.text===limpio||(c.text&&limpio&&c.text.indexOf(limpio)>-1);});
+h.icon=match?match.icon:'🖼️';
+}
+});}
 try{localStorage.setItem('av4',JSON.stringify(state));}catch(e){}
 try{sndPrize();launchConfetti();}catch(e){}
 overlay.remove();
@@ -832,6 +869,7 @@ info.appendChild(nm);info.appendChild(dt);
 item.appendChild(ic);item.appendChild(info);
 if(p.photo&&p.photo.length>10){
 var thumb=document.createElement('img');thumb.src=p.photo;thumb.style.cssText='width:32px;height:32px;border-radius:6px;object-fit:cover';
+thumb.onerror=function(){thumb.style.display='none';};
 item.appendChild(thumb);
 }
 var btn=document.createElement('button');
@@ -861,6 +899,7 @@ var nm=document.createElement('div');nm.style.cssText='font-size:1.1rem;font-wei
 card.appendChild(ic);card.appendChild(nm);
 if(p.photo&&p.photo.length>10){
 var img=document.createElement('img');img.src=p.photo;img.style.cssText='width:100%;border-radius:12px;margin-bottom:12px;max-height:200px;object-fit:cover';
+img.onerror=function(){img.style.display='none';var ph=document.createElement('div');ph.style.cssText='font-size:4rem;margin-bottom:12px';ph.textContent=p.icon;card.insertBefore(ph,img.nextSibling);};
 card.appendChild(img);
 }
 var photoBtn=document.createElement('button');
@@ -1913,11 +1952,12 @@ if(tieneFoto){
 var img=document.createElement('img');
 img.src=p.photo;
 img.style.cssText='width:100%;height:100px;object-fit:cover;display:block';
+img.onerror=function(){img.style.display='none';var ph2=document.createElement('div');ph2.style.cssText='width:100%;height:100px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:rgba(255,140,0,.1)';ph2.textContent=p.emoji||'🐶';frame.insertBefore(ph2,img);};
 frame.appendChild(img);
 }else{
 var ph=document.createElement('div');
 ph.style.cssText='width:100%;height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,140,0,.1)';
-ph.innerHTML='<div style="font-size:1.8rem">📸</div><div style="font-size:.5rem;color:rgba(255,255,255,.6);margin-top:2px">Toca para subir</div>';
+ph.innerHTML='<div style="font-size:1.8rem">'+(p.emoji||'🐶')+'</div><div style="font-size:.5rem;color:rgba(255,255,255,.6);margin-top:2px">Sin foto</div>';
 frame.appendChild(ph);
 }
 var info=document.createElement('div');
@@ -1942,12 +1982,13 @@ card.style.cssText='background:#141829;border:2px solid #FFD700;border-radius:16
 if(p.photo&&p.photo.length>10){
 var img=document.createElement('img');
 img.src=p.photo;img.style.cssText='width:100%;border-radius:10px;margin-bottom:8px;max-height:220px;object-fit:cover';
+img.onerror=function(){img.style.display='none';var ph3=document.createElement('div');ph3.style.cssText='font-size:4rem;margin-bottom:8px';ph3.textContent=p.emoji||'🐶';card.insertBefore(ph3,img);};
 card.appendChild(img);
 }else{
 var noPhoto=document.createElement('div');
 noPhoto.style.cssText='width:100%;height:120px;border-radius:10px;margin-bottom:8px;background:rgba(255,140,0,.1);border:2px dashed rgba(255,140,0,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer';
-var cam=document.createElement('div');cam.style.fontSize='2.5rem';cam.textContent='📸';
-var camTxt=document.createElement('div');camTxt.style.cssText='font-size:.8rem;color:#FF8C00;font-weight:700;margin-top:4px';camTxt.textContent='Toca para subir foto';
+var cam=document.createElement('div');cam.style.fontSize='2.5rem';cam.textContent=p.emoji||'🐶';
+var camTxt=document.createElement('div');camTxt.style.cssText='font-size:.8rem;color:#FF8C00;font-weight:700;margin-top:4px';camTxt.textContent='Sin foto · toca para añadir';
 noPhoto.appendChild(cam);noPhoto.appendChild(camTxt);
 noPhoto.addEventListener('click',function(){
 var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
@@ -2021,7 +2062,7 @@ moveBtn.style.cssText='width:100%;padding:10px;background:rgba(78,205,196,.15);c
 moveBtn.textContent='📋 Mover al historial general';
 moveBtn.addEventListener('click',function(){
 if(!state.history)state.history=[];
-state.history.push({icon:'📸',text:p.motivo,photo:p.photo,pts:0,date:p.date,ts:p.ts||Date.now()});
+state.history.push({icon:'🖼️',text:p.motivo,photo:p.photo,pts:0,date:p.date,ts:p.ts||Date.now()});
 state.petPhotos.splice(i,1);
 save();
 // Limpiar galería del DOM directamente
@@ -2033,9 +2074,21 @@ setTimeout(function(){try{renderPetGallery();}catch(e){}},100);
 toast('📋 Guardada en historial general');
 });
 card.appendChild(moveBtn);
+var recBtn=document.createElement('button');
+recBtn.style.cssText='width:100%;padding:9px;background:linear-gradient(135deg,#FFD700,#FFA500);color:#1a1a2e;border:none;border-radius:8px;font-weight:800;cursor:pointer;margin-bottom:8px';
+recBtn.textContent='🖼️ Tarjeta de recuerdo';
+recBtn.addEventListener('click',function(){mostrarRecuerdo({icon:p.emoji||'🐶',text:p.motivo,photo:p.photo,stars:p.stars,date:p.date,pts:0});});
+card.appendChild(recBtn);
+if(p.photo&&p.photo.length>10){
+var delFotoBtn=document.createElement('button');
+delFotoBtn.style.cssText='width:100%;padding:8px;background:rgba(230,126,34,.12);color:#E67E22;border:1px solid rgba(230,126,34,.4);border-radius:8px;font-weight:700;cursor:pointer;margin-bottom:8px';
+delFotoBtn.textContent='📷 Borrar solo la foto (liberar)';
+delFotoBtn.addEventListener('click',function(){p.photo='';if(state.petPhotos[i])state.petPhotos[i].photo='';try{save();}catch(e){}overlay.remove();try{renderPetGallery();}catch(e){}toast('📷 Foto borrada · espacio liberado');});
+card.appendChild(delFotoBtn);
+}
 var delBtn=document.createElement('button');
 delBtn.style.cssText='width:100%;padding:8px;background:rgba(231,76,60,.1);color:#FF6B6B;border:1px solid rgba(231,76,60,.3);border-radius:8px;font-weight:700;cursor:pointer;margin-bottom:8px';
-delBtn.textContent='🗑️ Eliminar';
+delBtn.textContent='🗑️ Eliminar entrada';
 delBtn.addEventListener('click',function(){state.petPhotos.splice(i,1);save();overlay.remove();try{renderPetGallery();}catch(e){}toast('Foto eliminada');});
 card.appendChild(delBtn);
 var closeBtn=document.createElement('button');
@@ -3002,31 +3055,146 @@ var grid=document.getElementById('history-grid');
 if(grid){
 grid.innerHTML='';
 (state.history||[]).forEach(function(item,idx){
-const visual=item.photo&&item.photo.length>10?'<img src="'+item.photo+'" class="history-img">':'<div class="history-img" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:rgba(255,215,0,.1)">'+item.icon+'</div>';
 const valor=item.hucha?'+'+item.hucha+'€':'+'+item.pts;
 const hdiv=document.createElement('div');hdiv.className='history-item';
 hdiv.addEventListener('click',(function(i){return function(){showHistoryItem(i);};})(idx));
-hdiv.innerHTML=visual+'<div class="history-info"><div class="history-icon">'+item.icon+'</div><div style="font-size:.6rem">'+item.text+'</div><div class="history-pts">'+valor+'</div></div>';
+var visualEl;
+if(item.photo&&item.photo.length>10){
+visualEl=document.createElement('img');visualEl.src=item.photo;visualEl.className='history-img';
+visualEl.onerror=function(){var d=document.createElement('div');d.className='history-img';d.style.cssText='display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:rgba(255,215,0,.1)';d.textContent=item.icon;if(visualEl.parentNode)visualEl.parentNode.replaceChild(d,visualEl);};
+}else{
+visualEl=document.createElement('div');visualEl.className='history-img';visualEl.style.cssText='display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:rgba(255,215,0,.1)';visualEl.textContent=item.icon;
+}
+var infoEl=document.createElement('div');infoEl.className='history-info';
+infoEl.innerHTML='<div class="history-icon">'+item.icon+'</div><div style="font-size:.6rem">'+item.text+'</div><div class="history-pts">'+valor+'</div>';
+hdiv.appendChild(visualEl);hdiv.appendChild(infoEl);
 grid.appendChild(hdiv);
 });
 }
+}
+
+function catInfo(item){
+var cats={manualidades:{c:'#FF6B6B',n:'MANUALIDAD'},cocina:{c:'#FF8C00',n:'COCINA'},deporte:{c:'#4ECDC4',n:'DEPORTE'},bienestar:{c:'#9B59B6',n:'BIENESTAR'},estudio:{c:'#3498DB',n:'ESTUDIO'},ahorro:{c:'#2ECC71',n:'AHORRO'},aire:{c:'#27AE60',n:'AIRE LIBRE'},declutter:{c:'#16A085',n:'ORDEN'},ocio:{c:'#E67E22',n:'OCIO'},premio:{c:'#FFD700',n:'PREMIO'},vive:{c:'#C39BD3',n:'VIVE LA VIDA'}};
+var match=CARDS.find(function(c){var t=(item.text||'').replace(/^(🎁|🏆|🧘|☀️|♻️|🚫)\s*/,'').replace(/ \(\d+€[^)]*\)/,'').trim();return c.text===t||(c.text&&t&&c.text.indexOf(t)>-1);});
+var cat=match?match.cat:(item.hucha?'premio':'bienestar');
+var desc=match?(CARD_DESCRIPTIONS[match.id]||''):'';
+return {color:(cats[cat]||{c:'#4ECDC4'}).c,nombre:(cats[cat]||{n:'LOGRO'}).n,desc:desc};
+}
+
+function tarjetaCromo(item,modo){
+var info=catInfo(item);
+var col=info.color;
+var limpio=(item.text||'').replace(/^(🎁|🏆|🧘|☀️|♻️|🚫)\s*/,'').replace(/ \(\d+€[^)]*\)/,'').trim();
+var estrellas=item.stars?'⭐'.repeat(item.stars):'';
+var wrap=document.createElement('div');
+wrap.style.cssText='background:linear-gradient(160deg,#1a1a2e,#16213e);border:4px solid '+col+';border-radius:18px;padding:0;max-width:300px;width:100%;overflow:hidden;box-shadow:0 0 30px '+col+'55;position:relative';
+// Cabecera con categoría
+var head=document.createElement('div');
+head.style.cssText='background:'+col+';padding:7px 12px;display:flex;justify-content:space-between;align-items:center';
+head.innerHTML='<span style="font-weight:900;font-size:.7rem;letter-spacing:1px;color:#1a1a2e">'+item.icon+' '+info.nombre+'</span><span style="font-size:.62rem;font-weight:700;color:rgba(26,26,46,.7)">AVENTURA TOTAL</span>';
+wrap.appendChild(head);
+// Foto o emoji
+var fotoBox=document.createElement('div');
+fotoBox.style.cssText='width:100%;height:180px;background:#0d0d1a;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:2px solid '+col+'44';
+if(item.photo&&item.photo.length>10){
+var im=document.createElement('img');im.src=item.photo;im.style.cssText='width:100%;height:100%;object-fit:cover';
+im.onerror=function(){fotoBox.innerHTML='<div style="font-size:5rem">'+item.icon+'</div>';};
+fotoBox.appendChild(im);
+}else{fotoBox.innerHTML='<div style="font-size:5rem">'+item.icon+'</div>';}
+wrap.appendChild(fotoBox);
+// Cuerpo
+var body=document.createElement('div');body.style.cssText='padding:14px';
+var titulo=document.createElement('div');titulo.style.cssText='font-size:1.05rem;font-weight:900;color:#fff;margin-bottom:5px;line-height:1.2';titulo.textContent=limpio;
+body.appendChild(titulo);
+if(info.desc){var d=document.createElement('div');d.style.cssText='font-size:.74rem;color:rgba(255,255,255,.6);margin-bottom:8px;line-height:1.3';d.textContent=info.desc;body.appendChild(d);}
+if(estrellas){var st=document.createElement('div');st.style.cssText='font-size:1.1rem;margin-bottom:6px';st.textContent=estrellas;body.appendChild(st);}
+var foot=document.createElement('div');foot.style.cssText='display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1)';
+var val=item.hucha?('💰 +'+item.hucha+'€'):('⭐ +'+(item.pts||0)+' pts');
+foot.innerHTML='<span style="font-size:.7rem;color:'+col+';font-weight:800">'+val+'</span><span style="font-size:.65rem;color:rgba(255,255,255,.45)">'+(item.date||'')+'</span>';
+body.appendChild(foot);
+wrap.appendChild(body);
+return wrap;
 }
 
 function showHistoryItem(idx){
 const item=(state.history||[])[idx];
 if(!item)return;
 const overlay=document.createElement('div');
-overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:150;display:flex;align-items:center;justify-content:center;padding:20px';
-const card=document.createElement('div');
-card.style.cssText='background:#141829;border-radius:15px;padding:20px;max-width:400px;text-align:center';
-if(item.photo&&item.photo.length>10){const img=document.createElement('img');img.src=item.photo;img.style.cssText='width:100%;border-radius:10px;margin-bottom:15px;max-height:300px';card.appendChild(img);}
-else{const ic=document.createElement('div');ic.style.cssText='font-size:5rem;margin-bottom:15px';ic.textContent=item.icon;card.appendChild(ic);}
-const nm=document.createElement('div');nm.style.cssText='font-size:1.3rem;font-weight:800;margin-bottom:10px;color:#fff';nm.textContent=item.icon+' '+item.text;card.appendChild(nm);
-const vl=document.createElement('div');vl.style.cssText='font-size:1rem;color:#FFD700;font-weight:800;margin-bottom:10px';vl.textContent=item.hucha?'+'+item.hucha+'€ hucha':'+'+item.pts+' pts';card.appendChild(vl);
-const dt=document.createElement('div');dt.style.cssText='font-size:.85rem;color:rgba(255,255,255,.6);margin-bottom:10px';dt.textContent=item.date;card.appendChild(dt);
-const btn=document.createElement('button');btn.style.cssText='width:100%;padding:10px;background:#4ECDC4;color:#1a1a2e;border:none;border-radius:8px;font-weight:800;cursor:pointer';btn.textContent='✅ Cerrar';
-btn.addEventListener('click',()=>overlay.remove());card.appendChild(btn);
-overlay.appendChild(card);document.body.appendChild(overlay);
+overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:150;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;overflow-y:auto';
+var cromo=tarjetaCromo(item,'view');
+overlay.appendChild(cromo);
+// Botones
+var btns=document.createElement('div');btns.style.cssText='max-width:300px;width:100%;margin-top:12px;display:flex;flex-direction:column;gap:7px';
+// Imprimir/recuerdo
+var printBtn=document.createElement('button');
+printBtn.style.cssText='width:100%;padding:11px;background:linear-gradient(135deg,#FFD700,#FFA500);color:#1a1a2e;border:none;border-radius:10px;font-weight:800;cursor:pointer;font-size:.85rem';
+printBtn.textContent='🖼️ Ver tarjeta de recuerdo (pantallazo)';
+printBtn.addEventListener('click',function(){mostrarRecuerdo(item);});
+btns.appendChild(printBtn);
+// Cambiar/subir foto
+var photoBtn=document.createElement('button');
+photoBtn.style.cssText='width:100%;padding:11px;background:rgba(78,205,196,.15);color:#4ECDC4;border:1px solid #4ECDC4;border-radius:10px;font-weight:700;cursor:pointer;font-size:.82rem';
+photoBtn.textContent=item.photo&&item.photo.length>10?'📷 Cambiar foto':'📷 Subir foto';
+photoBtn.addEventListener('click',function(){
+var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+inp.addEventListener('change',function(e){
+var file=e.target.files[0];if(!file)return;
+var rd=new FileReader();
+rd.onload=function(ev){
+var im2=new Image();
+im2.onload=function(){
+var canvas=document.createElement('canvas');var w=im2.width,h=im2.height;var max=400;
+if(w>h&&w>max){h=h*max/w;w=max;}else if(h>max){w=w*max/h;h=max;}
+canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(im2,0,0,w,h);
+item.photo=canvas.toDataURL('image/jpeg',0.6);
+try{save();}catch(er){toast('⚠️ Memoria llena, libera espacio');return;}
+overlay.remove();renderHistory();
+try{sndDing();}catch(er){}
+toast('📷 ¡Foto actualizada!');
+};im2.src=ev.target.result;
+};rd.readAsDataURL(file);
+});
+inp.click();
+});
+btns.appendChild(photoBtn);
+// Borrar foto (si tiene)
+if(item.photo&&item.photo.length>10){
+var delPhotoBtn=document.createElement('button');
+delPhotoBtn.style.cssText='width:100%;padding:11px;background:rgba(231,76,60,.15);color:#E74C3C;border:1px solid #E74C3C;border-radius:10px;font-weight:700;cursor:pointer;font-size:.82rem';
+delPhotoBtn.textContent='🗑️ Borrar foto (liberar espacio)';
+delPhotoBtn.addEventListener('click',function(){
+item.photo='';
+try{save();}catch(er){}
+overlay.remove();renderHistory();
+toast('🗑️ Foto borrada · espacio liberado');
+});
+btns.appendChild(delPhotoBtn);
+}
+var btn=document.createElement('button');
+btn.style.cssText='width:100%;padding:10px;background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer';
+btn.textContent='Cerrar';
+btn.addEventListener('click',function(){overlay.remove();});
+btns.appendChild(btn);
+overlay.appendChild(btns);
+document.body.appendChild(overlay);
+}
+
+function mostrarRecuerdo(item){
+var ov=document.createElement('div');
+ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:700;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;overflow-y:auto';
+var cromoBig=tarjetaCromo(item,'print');
+cromoBig.style.maxWidth='320px';
+ov.appendChild(cromoBig);
+var hint=document.createElement('div');
+hint.style.cssText='color:rgba(255,255,255,.7);font-size:.78rem;margin-top:14px;text-align:center;max-width:300px';
+hint.textContent='📸 Haz una captura de pantalla para guardar este recuerdo. Pulsa los botones de bloqueo + volumen.';
+ov.appendChild(hint);
+var c=document.createElement('button');
+c.style.cssText='margin-top:12px;padding:11px 30px;background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer';
+c.textContent='Cerrar';
+c.addEventListener('click',function(){ov.remove();});
+ov.appendChild(c);
+document.body.appendChild(ov);
 }
 
 function openPhotoModal(card){
@@ -3183,6 +3351,7 @@ var _sn=document.getElementById('saveNowBtn');if(_sn)_sn.addEventListener('click
 var _ex=document.getElementById('exportBtn');if(_ex)_ex.addEventListener('click',exportarCodigo);
 var _im=document.getElementById('importBtn');if(_im)_im.addEventListener('click',importarCodigo);
 var _df=document.getElementById('downloadPhotosBtn');if(_df)_df.addEventListener('click',descargarFotos);
+var _cp=document.getElementById('cleanPhotosBtn');if(_cp)_cp.addEventListener('click',limpiarFotos);
 var _sb=document.getElementById('slotBtn');if(_sb)_sb.addEventListener('click',openSlot);
 var _bj=document.getElementById('blackjackBtn');if(_bj)_bj.addEventListener('click',openBlackjack);
 document.getElementById('gymBtn').addEventListener('click',function(){try{sndCheck();}catch(e){}addGymDay();});
