@@ -1104,7 +1104,7 @@ document.getElementById('prizeYes').addEventListener('click',()=>{
 state.huchaGanada+=c.hucha;
 state.done.push(c.id);
 if(!state.history)state.history=[];
-state.history.push({icon:c.icon,text:'🎁 '+c.text,photo:'',pts:0,hucha:c.hucha,date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});
+state.history.push({icon:c.icon,text:'🎁 '+c.text,photo:'',pts:0,hucha:c.hucha,cat:'premio',date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});
 save();update();
 toast('🎁 '+c.text+' · +'+c.hucha+'€ hucha');
 overlay.remove();
@@ -1562,7 +1562,7 @@ btn.appendChild(ic);btn.appendChild(tx);btn.appendChild(eu);
 btn.addEventListener('click',function(){
 state.huchaGanada+=p.hucha;
 if(!state.history)state.history=[];
-state.history.push({icon:p.icon,text:'🎁 '+p.text,photo:'',pts:0,date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});
+state.history.push({icon:p.icon,text:'🎁 '+p.text,photo:'',pts:0,cat:(p.cat||'premio'),date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});
 save();update();
 overlay.remove();
 toast('🎁 '+p.text+' +'+p.hucha+'€ a la hucha!');
@@ -1601,7 +1601,7 @@ function darPremioCapricho(){
 var p=CARDS.filter(function(x){return x.cat==='premio';});
 var r=p[Math.floor(Math.random()*p.length)];
 if(!state.history)state.history=[];
-state.history.push({icon:r.icon,text:'🎁 '+r.text,photo:'',pts:0,date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});
+state.history.push({icon:r.icon,text:'🎁 '+r.text,photo:'',pts:0,cat:'premio',date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});
 save();update();
 try{sndPrize();launchConfetti();}catch(e){}
 return r;
@@ -1797,9 +1797,9 @@ const premios=[
 {txt:'+30€ a la hucha',color:'#2ECC71',act:()=>{state.huchaGanada+=30;toast('🎉 +30€ a la hucha!');}},
 {txt:'+15 puntos',color:'#FFD700',act:()=>{state.pts+=15;try{sndCoin();}catch(e){}toast('🎉 +15 puntos!');}},
 {txt:'-10 puntos',color:'#E74C3C',act:()=>{state.pts=Math.max(0,state.pts-10);toast('😅 -10 puntos');}},
-{txt:'Premio capricho',color:'#FF6B6B',act:()=>{if(Math.random()<0.5){state.pts+=15;toast('🎉 +15 puntos!');try{sndCoin();}catch(e){}return '+15 puntos (¡casi premio!)';}const p=CARDS.filter(x=>x.cat==='premio');const r=p[Math.floor(Math.random()*p.length)];if(!state.history)state.history=[];state.history.push({icon:r.icon,text:'🎁 '+r.text,photo:'',pts:0,date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});toast('🎁 '+r.text);return r.icon+' '+r.text;}},
-{txt:'Regalo Vive la Vida',color:'#9B59B6',act:()=>{const r=VIVE_REGALOS[Math.floor(Math.random()*VIVE_REGALOS.length)];state.pts+=5;if(!state.history)state.history=[];state.history.push({icon:r.icon,text:'🎁 '+r.text,photo:'',pts:5,date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});toast('🎁 '+r.text+' +5 pts');return r.icon+' '+r.text+' (+5 pts)';}},
-{txt:'Premio Zen',color:'#C39BD3',act:()=>{const r=ZEN_PREMIOS[Math.floor(Math.random()*ZEN_PREMIOS.length)];state.pts+=5;if(!state.history)state.history=[];state.history.push({icon:r.icon,text:'🧘 '+r.text,photo:'',pts:5,date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});toast('🧘 '+r.text+' +5 pts');return r.icon+' '+r.text+' (+5 pts)';}},
+{txt:'Premio capricho',color:'#FF6B6B',act:()=>{if(Math.random()<0.5){state.pts+=15;toast('🎉 +15 puntos!');try{sndCoin();}catch(e){}return '+15 puntos (¡casi premio!)';}const p=CARDS.filter(x=>x.cat==='premio');const r=p[Math.floor(Math.random()*p.length)];if(!state.history)state.history=[];state.history.push({icon:r.icon,text:'🎁 '+r.text,photo:'',pts:0,cat:'premio',date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});toast('🎁 '+r.text);return r.icon+' '+r.text;}},
+{txt:'Regalo Vive la Vida',color:'#9B59B6',act:()=>{const r=VIVE_REGALOS[Math.floor(Math.random()*VIVE_REGALOS.length)];state.pts+=5;if(!state.history)state.history=[];state.history.push({icon:r.icon,text:'🎁 '+r.text,photo:'',pts:5,cat:'vive',date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});toast('🎁 '+r.text+' +5 pts');return r.icon+' '+r.text+' (+5 pts)';}},
+{txt:'Premio Zen',color:'#C39BD3',act:()=>{const r=ZEN_PREMIOS[Math.floor(Math.random()*ZEN_PREMIOS.length)];state.pts+=5;if(!state.history)state.history=[];state.history.push({icon:r.icon,text:'🧘 '+r.text,photo:'',pts:5,cat:'vive',date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});toast('🧘 '+r.text+' +5 pts');return r.icon+' '+r.text+' (+5 pts)';}},
 {txt:'+20€ ahorro',color:'#16A085',act:()=>{state.huchaGanada+=20;toast('💰 +20€ a la hucha!');}},
 {txt:'¡Elige un premio!',color:'#4ECDC4',act:()=>{setTimeout(function(){showCheapPrizeChoice();},500);return '¡Elige tu premio barato!';}},
 {txt:'+50€ a la hucha',color:'#27AE60',act:()=>{state.huchaGanada+=50;try{sndJackpot();}catch(e){}toast('💰 ¡JACKPOT! +50€ a la hucha!');}},
@@ -2077,7 +2077,13 @@ card.appendChild(moveBtn);
 var recBtn=document.createElement('button');
 recBtn.style.cssText='width:100%;padding:9px;background:linear-gradient(135deg,#FFD700,#FFA500);color:#1a1a2e;border:none;border-radius:8px;font-weight:800;cursor:pointer;margin-bottom:8px';
 recBtn.textContent='🖼️ Tarjeta de recuerdo';
-recBtn.addEventListener('click',function(){mostrarRecuerdo({icon:p.emoji||'🐶',text:p.motivo,photo:p.photo,stars:p.stars,date:p.date,pts:0});});
+recBtn.addEventListener('click',function(){
+var mot=p.motivo||'';
+var catP=null,txtP=mot;
+if(mot.indexOf('premio:')===0){catP='premio';txtP=mot.replace('premio:','').trim();}
+else{var mc=CARDS.find(function(c){var ct=c.text.replace(/^🛍️\s*/,'').replace(/ \(\d+€[^)]*\)/,'').trim();return ct===mot||c.text===mot;});if(mc)catP=mc.cat;}
+mostrarRecuerdo({icon:p.emoji||'🐶',text:txtP,cat:catP,photo:p.photo,stars:p.stars,date:p.date,pts:0});
+});
 card.appendChild(recBtn);
 if(p.photo&&p.photo.length>10){
 var delFotoBtn=document.createElement('button');
@@ -2340,7 +2346,7 @@ const regalo=VIVE_REGALOS[Math.floor(Math.random()*VIVE_REGALOS.length)];
 state.pts+=(c.pts||0);
 state.done.push(c.id);
 if(!state.history)state.history=[];
-state.history.push({icon:regalo.icon,text:'🎁 '+regalo.text,photo:'',pts:c.pts||0,date:new Date().toLocaleDateString(),ts:Date.now()});
+state.history.push({icon:regalo.icon,text:'🎁 '+regalo.text,photo:'',pts:c.pts||0,cat:'vive',date:new Date().toLocaleDateString(),ts:Date.now()});
 save();
 d.className='card-box premio';
 d.innerHTML='<div class="card-icon">🎁</div><div class="card-title">🎁 ¡VIVE LA VIDA!</div><div id="viveGift" style="font-size:1rem;color:#FFD700;font-weight:800;margin-top:8px;opacity:.4">🎰 ...</div><div id="viveWebMsg" style="font-size:.75rem;color:#fff;margin-top:6px;background:rgba(155,89,182,.4);border-radius:8px;padding:5px 8px;display:inline-block">🌐 Buscando lo más vendido ahora en internet...</div><div style="font-size:.8rem;color:rgba(255,255,255,.7);margin-top:6px">+'+(c.pts||0)+' pts</div>';
@@ -2685,7 +2691,7 @@ b.style.cssText='width:100%;display:flex;align-items:center;gap:10px;padding:12p
 b.innerHTML='<span style="font-size:1.5rem">'+p.icon+'</span><span>'+p.text+' <span style="color:#FFD700">('+p.hucha+'€)</span></span>';
 b.addEventListener('click',function(){
 if(!state.history)state.history=[];
-state.history.push({icon:p.icon,text:'🏆 '+p.text,photo:'',pts:0,date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});
+state.history.push({icon:p.icon,text:'🏆 '+p.text,photo:'',pts:0,cat:(p.cat||'premio'),date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});
 save();update();
 try{sndPrize();launchConfetti();}catch(e){}
 overlay.remove();
@@ -3075,23 +3081,45 @@ grid.appendChild(hdiv);
 
 function catInfo(item){
 var cats={manualidades:{c:'#FF6B6B',n:'MANUALIDAD'},cocina:{c:'#FF8C00',n:'COCINA'},deporte:{c:'#4ECDC4',n:'DEPORTE'},bienestar:{c:'#9B59B6',n:'BIENESTAR'},estudio:{c:'#3498DB',n:'ESTUDIO'},ahorro:{c:'#2ECC71',n:'AHORRO'},aire:{c:'#27AE60',n:'AIRE LIBRE'},declutter:{c:'#16A085',n:'ORDEN'},ocio:{c:'#E67E22',n:'OCIO'},premio:{c:'#FFD700',n:'PREMIO'},vive:{c:'#C39BD3',n:'VIVE LA VIDA'}};
-var match=CARDS.find(function(c){var t=(item.text||'').replace(/^(🎁|🏆|🧘|☀️|♻️|🚫)\s*/,'').replace(/ \(\d+€[^)]*\)/,'').trim();return c.text===t||(c.text&&t&&c.text.indexOf(t)>-1);});
-var cat=match?match.cat:(item.hucha?'premio':'bienestar');
-var desc=match?(CARD_DESCRIPTIONS[match.id]||''):'';
-return {color:(cats[cat]||{c:'#4ECDC4'}).c,nombre:(cats[cat]||{n:'LOGRO'}).n,desc:desc};
+var txt=(item.text||'');
+var limpio=txt.replace(/^(🎁|🏆|🧘|☀️|♻️|🚫|📋)\s*/,'').replace(/^premio:\s*/i,'').replace(/^Regalo mascota:\s*/i,'').replace(/ \(\d+€[^)]*\)/,'').replace(/^🛍️\s*/,'').trim();
+var cat=item.cat||null,desc='';
+// PRIORIDAD MÁXIMA: el prefijo del texto indica que es premio/regalo conseguido
+var esPremio=(/^🎁/.test(txt)||/^premio:/i.test(txt)||item.hucha);
+var esVive=(/^🧘/.test(txt)||txt.indexOf('Vive la Vida')>-1||/^☀️/.test(txt));
+// Buscar descripción en CARDS (para mostrarla) sin cambiar la categoría si ya es premio/vive
+var match=CARDS.find(function(c){return c.text===limpio;});
+if(!match)match=CARDS.find(function(c){var ct=c.text.replace(/^🛍️\s*/,'').replace(/ \(\d+€[^)]*\)/,'').trim();return ct===limpio;});
+if(!match&&item.icon)match=CARDS.find(function(c){var ct=c.text.replace(/^🛍️\s*/,'').replace(/ \(\d+€[^)]*\)/,'').trim();return c.icon===item.icon&&(ct===limpio||limpio.indexOf(ct)>-1||ct.indexOf(limpio)>-1);});
+if(match)desc=CARD_DESCRIPTIONS[match.id]||'';
+// Decidir categoría con prioridad: cat guardada > premio/vive por prefijo > match en CARDS > emoji premio > bienestar
+if(!cat){
+if(esPremio)cat='premio';
+else if(esVive)cat='vive';
+else if(match)cat=match.cat;
+else{
+var premioEmojis=['🎁','🛁','👕','🌸','💄','🍫','📕','🕯️','☕','🍺','🍽️','🍕','🍻','🥩','🌮','🧀','🍔','🎮','🕹️','🎬','🍿','🎲','🧸','⚡','⛵','📦','🐉','🌌','💀','😢','⭐','🐻','🍥','🦸','🏰','⚔️','🎯','🥇','🎌','🤖','🗃️','🌱','🧱','🌿','💪'];
+if(item.icon&&premioEmojis.indexOf(item.icon)>-1)cat='premio';
+else cat='bienestar';
+}
+}
+var iconLimpio=item.icon;
+if((item.icon==='🖼️'||item.icon==='📸'||item.icon==='📷')&&match)iconLimpio=match.icon;
+return {color:(cats[cat]||{c:'#4ECDC4'}).c,nombre:(cats[cat]||{n:'LOGRO'}).n,desc:desc,icon:iconLimpio};
 }
 
 function tarjetaCromo(item,modo){
 var info=catInfo(item);
 var col=info.color;
-var limpio=(item.text||'').replace(/^(🎁|🏆|🧘|☀️|♻️|🚫)\s*/,'').replace(/ \(\d+€[^)]*\)/,'').trim();
+var iconShow=info.icon||item.icon;
+var limpio=(item.text||'').replace(/^(🎁|🏆|🧘|☀️|♻️|🚫|📋)\s*/,'').replace(/^premio:\s*/i,'').replace(/^Regalo mascota:\s*/i,'').replace(/ \(\d+€[^)]*\)/,'').replace(/^🛍️\s*/,'').trim();
 var estrellas=item.stars?'⭐'.repeat(item.stars):'';
 var wrap=document.createElement('div');
 wrap.style.cssText='background:linear-gradient(160deg,#1a1a2e,#16213e);border:4px solid '+col+';border-radius:18px;padding:0;max-width:300px;width:100%;overflow:hidden;box-shadow:0 0 30px '+col+'55;position:relative';
 // Cabecera con categoría
 var head=document.createElement('div');
 head.style.cssText='background:'+col+';padding:7px 12px;display:flex;justify-content:space-between;align-items:center';
-head.innerHTML='<span style="font-weight:900;font-size:.7rem;letter-spacing:1px;color:#1a1a2e">'+item.icon+' '+info.nombre+'</span><span style="font-size:.62rem;font-weight:700;color:rgba(26,26,46,.7)">AVENTURA TOTAL</span>';
+head.innerHTML='<span style="font-weight:900;font-size:.7rem;letter-spacing:1px;color:#1a1a2e">'+iconShow+' '+info.nombre+'</span><span style="font-size:.62rem;font-weight:700;color:rgba(26,26,46,.7)">AVENTURA TOTAL</span>';
 wrap.appendChild(head);
 // Foto o emoji
 var fotoBox=document.createElement('div');
@@ -3264,7 +3292,7 @@ function showStreakPrize(prize,titulo,color){
 try{sndPrize();}catch(e){}
 if(!state.history)state.history=[];
 var _tipo=titulo.indexOf('GYM')>=0?'🏆 Premio Gym':'🧘 Premio Zen';
-state.history.push({icon:prize.icon,text:_tipo+': '+prize.text,photo:'',pts:0,date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});
+state.history.push({icon:prize.icon,text:_tipo+': '+prize.text,photo:'',pts:0,cat:(prize.cat||'premio'),date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});
 save();
 const overlay=document.createElement('div');
 overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px';
