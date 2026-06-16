@@ -2081,6 +2081,8 @@ recBtn.addEventListener('click',function(){
 var mot=p.motivo||'';
 var catP=null,txtP=mot;
 if(mot.indexOf('premio:')===0){catP='premio';txtP=mot.replace('premio:','').trim();}
+else if(mot.indexOf('manualidad:')===0){catP='manualidades';txtP=mot.replace('manualidad:','').trim();}
+else if(mot.indexOf('plato:')===0){catP='cocina';txtP=mot.replace('plato:','').trim();}
 else{var mc=CARDS.find(function(c){var ct=c.text.replace(/^🛍️\s*/,'').replace(/ \(\d+€[^)]*\)/,'').trim();return ct===mot||c.text===mot;});if(mc)catP=mc.cat;}
 mostrarRecuerdo({icon:p.emoji||'🐶',text:txtP,cat:catP,photo:p.photo,stars:p.stars,date:p.date,pts:0});
 });
@@ -3080,13 +3082,17 @@ grid.appendChild(hdiv);
 }
 
 function catInfo(item){
-var cats={manualidades:{c:'#FF6B6B',n:'MANUALIDAD'},cocina:{c:'#FF8C00',n:'COCINA'},deporte:{c:'#4ECDC4',n:'DEPORTE'},bienestar:{c:'#9B59B6',n:'BIENESTAR'},estudio:{c:'#3498DB',n:'ESTUDIO'},ahorro:{c:'#2ECC71',n:'AHORRO'},aire:{c:'#27AE60',n:'AIRE LIBRE'},declutter:{c:'#16A085',n:'ORDEN'},ocio:{c:'#E67E22',n:'OCIO'},premio:{c:'#FFD700',n:'PREMIO'},vive:{c:'#C39BD3',n:'VIVE LA VIDA'}};
+var cats={manualidades:{c:'#FF6B6B',n:'MANUALIDAD'},cocina:{c:'#FF8C00',n:'COCINA'},deporte:{c:'#4ECDC4',n:'DEPORTE'},bienestar:{c:'#9B59B6',n:'BIENESTAR'},estudio:{c:'#3498DB',n:'ESTUDIO'},ahorro:{c:'#2ECC71',n:'AHORRO'},aire:{c:'#27AE60',n:'AIRE LIBRE'},declutter:{c:'#16A085',n:'ORDEN'},ocio:{c:'#E67E22',n:'OCIO'},premio:{c:'#FFD700',n:'PREMIO'},vive:{c:'#C39BD3',n:'VIVE LA VIDA'},mascota:{c:'#F39C12',n:'MASCOTA'}};
 var txt=(item.text||'');
-var limpio=txt.replace(/^(🎁|🏆|🧘|☀️|♻️|🚫|📋)\s*/,'').replace(/^premio:\s*/i,'').replace(/^Regalo mascota:\s*/i,'').replace(/ \(\d+€[^)]*\)/,'').replace(/^🛍️\s*/,'').trim();
+var limpio=txt.replace(/^(🎁|🏆|🧘|☀️|♻️|🚫|📋)\s*/,'').replace(/^premio:\s*/i,'').replace(/^Regalo mascota:\s*/i,'').replace(/^manualidad:\s*/i,'').replace(/^plato:\s*/i,'').replace(/ \(\d+€[^)]*\)/,'').replace(/^🛍️\s*/,'').trim();
 var cat=item.cat||null,desc='';
 // PRIORIDAD MÁXIMA: el prefijo del texto indica que es premio/regalo conseguido
 var esPremio=(/^🎁/.test(txt)||/^premio:/i.test(txt)||item.hucha);
 var esVive=(/^🧘/.test(txt)||txt.indexOf('Vive la Vida')>-1||/^☀️/.test(txt));
+var esManual=/^manualidad:/i.test(txt);
+var esPlato=/^plato:/i.test(txt);
+var esReciclaje=/^♻️/.test(txt);
+var esMascota=/^(Regalo mascota:|🐕|🐶|🦴)/.test(txt)||/^(☀️ Regalo sol|☀️ Premio Sol)/.test(txt);
 // Buscar descripción en CARDS (para mostrarla) sin cambiar la categoría si ya es premio/vive
 var match=CARDS.find(function(c){return c.text===limpio;});
 if(!match)match=CARDS.find(function(c){var ct=c.text.replace(/^🛍️\s*/,'').replace(/ \(\d+€[^)]*\)/,'').trim();return ct===limpio;});
@@ -3095,7 +3101,11 @@ if(match)desc=CARD_DESCRIPTIONS[match.id]||'';
 // Decidir categoría con prioridad: cat guardada > premio/vive por prefijo > match en CARDS > emoji premio > bienestar
 if(!cat){
 if(esPremio)cat='premio';
+else if(esMascota)cat='mascota';
 else if(esVive)cat='vive';
+else if(esManual)cat='manualidades';
+else if(esPlato)cat='cocina';
+else if(esReciclaje)cat='declutter';
 else if(match)cat=match.cat;
 else{
 var premioEmojis=['🎁','🛁','👕','🌸','💄','🍫','📕','🕯️','☕','🍺','🍽️','🍕','🍻','🥩','🌮','🧀','🍔','🎮','🕹️','🎬','🍿','🎲','🧸','⚡','⛵','📦','🐉','🌌','💀','😢','⭐','🐻','🍥','🦸','🏰','⚔️','🎯','🥇','🎌','🤖','🗃️','🌱','🧱','🌿','💪'];
@@ -3472,7 +3482,7 @@ activeBonus=null;
 state.pts+=ptsGained;
 var _pi=document.getElementById('previewImg');var photoData=(_pi&&_pi.src&&_pi.src.length>10)?_pi.src:'';
 if(!state.history)state.history=[];
-state.history.push({icon:window.photoCard.icon,text:window.photoCard.text,photo:photoData,pts:ptsGained,date:new Date().toLocaleDateString(),ts:Date.now()});
+state.history.push({icon:window.photoCard.icon,text:window.photoCard.text,photo:photoData,pts:ptsGained,cat:window.photoCard.cat,date:new Date().toLocaleDateString(),ts:Date.now()});
 save();
 document.getElementById('photoModal').classList.remove('open');
 if(state.pending.length<=10)poopMode=false;
