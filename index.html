@@ -187,6 +187,29 @@ button{flex:1;padding:15px;border:none;border-radius:12px;font-size:1rem;font-we
 </div>
 </div>
 
+<div class="section-title">📊 HÁBITOS DIARIOS (meta 50 → +30 pts)</div>
+<div class="streak-card" style="margin-bottom:16px">
+<div class="streak-title" style="color:#3498DB">🎯 BARRA DE HÁBITOS</div>
+<div class="streak-counter"><div class="streak-num" id="habitCount" style="background:linear-gradient(135deg,#3498DB,#2ECC71)">0</div><div class="streak-target">/ 50</div></div>
+<div class="streak-progress"><div class="streak-fill" id="habitFill" style="width:0%;background:linear-gradient(90deg,#3498DB,#2ECC71)"></div></div>
+<div class="streak-info"><span id="habitInfo">0 / 50</span><span>+30 pts al completar</span></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px">
+<button class="streak-btn" id="habEstudioBtn" style="background:linear-gradient(135deg,#3498DB,#2980B9);color:#fff">📚 Estudio</button>
+<button class="streak-btn" id="habLecturaBtn" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);color:#fff">📖 Lectura</button>
+<button class="streak-btn" id="habLimpiezaBtn" style="background:linear-gradient(135deg,#16A085,#1ABC9C);color:#fff">🧹 Limpieza</button>
+<button class="streak-btn" id="habMadrugarBtn" style="background:linear-gradient(135deg,#E67E22,#F39C12);color:#1a1a2e">🌅 Madrugar</button>
+</div>
+<div style="font-size:.68rem;color:rgba(255,255,255,.5);margin-top:8px;text-align:center">Cada uno suma 1 nivel, una vez al día</div>
+</div>
+
+<div class="section-title">🎨 CREATIVIDAD</div>
+<div class="streak-card" style="margin-bottom:16px;border:2px solid rgba(255,107,107,.4)">
+<div style="font-size:2.2rem;text-align:center;margin-bottom:4px">🎨</div>
+<div style="font-size:.95rem;font-weight:900;color:#FF6B6B;text-align:center;margin-bottom:4px">¡He sido creativo!</div>
+<div style="font-size:.74rem;color:rgba(255,255,255,.7);text-align:center;margin-bottom:10px;line-height:1.4">¿Has cocinado algo, montado tu bola Zuru, pintado, creado algo con tus manos? Sube la foto y gana +5 pts. ¡Siempre disponible!</div>
+<button class="streak-btn" id="creatividadBtn" style="background:linear-gradient(135deg,#FF6B6B,#FF1493);color:#fff">📷 Subir mi creación (+5 pts)</button>
+</div>
+
 <div class="section-title">🎲 CASINO (5€ por jugada)</div>
 <div style="display:flex;gap:10px;margin-bottom:20px">
 <button id="slotBtn" style="flex:1;padding:16px;background:linear-gradient(135deg,#E74C3C,#FF6B6B);color:#fff;border:none;border-radius:14px;font-weight:800;cursor:pointer;font-size:.95rem">🎰<br>Tragaperras</button>
@@ -315,7 +338,7 @@ const BONUS=[{id:'pareja',icon:'❤️',text:'En pareja',mult:1.5},{id:'grupo',i
 let activeBonus=null;
 let poopMode=false;
 let appReady=false;
-let state={done:[],pending:[],pts:0,huchaGanada:0,gastos:0,history:[],gymDays:0,zenDays:0,pendingIdeas:{},petFed:0,petGoals:0,petLastDay:'',petStage:0,sunMinutes:0,petWalks:0,petDraws:0};
+let state={done:[],pending:[],pts:0,huchaGanada:0,gastos:0,history:[],gymDays:0,zenDays:0,pendingIdeas:{},petFed:0,petGoals:0,petLastDay:'',petStage:0,sunMinutes:0,petWalks:0,petDraws:0,habitLevel:0,habitDays:{}};
 
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),5000);}
 
@@ -1041,6 +1064,7 @@ if(document.getElementById('cardPrizeGrid'))renderCardPrizes();
 if(document.getElementById('tallerGrid'))renderTaller();
 try{renderMemoria();}catch(e){}
 try{updateGymZenBtns();}catch(e){}
+try{updateHabitBar();}catch(e){}
 try{updateCasinoBtns();}catch(e){}
 try{checkReciclaje();}catch(e){}
 renderGoals();
@@ -1733,6 +1757,91 @@ cBtn.addEventListener('click',function(){ov.remove();});
 card.appendChild(cBtn);
 ov.appendChild(card);document.body.appendChild(ov);
 setTimeout(function(){try{input.focus();input.select();}catch(e){}},100);
+}
+
+function addHabito(tipo,nombre){
+var hoy=new Date().toLocaleDateString();
+if(!state.habitDays)state.habitDays={};
+var clave=tipo+'_'+hoy;
+if(state.habitDays[clave]){toast('✅ Ya hiciste '+nombre+' hoy. ¡Vuelve mañana!');return;}
+if((state.habitLevel||0)>=50){toast('🎯 ¡Barra de hábitos completa! Ya tienes tus +30 pts');return;}
+state.habitDays[clave]=1;
+state.habitLevel=(state.habitLevel||0)+1;
+// Limpiar claves viejas para no acumular memoria
+var claves=Object.keys(state.habitDays);
+if(claves.length>40){claves.slice(0,claves.length-20).forEach(function(k){delete state.habitDays[k];});}
+if(state.habitLevel>=50){
+state.pts+=30;
+state.habitLevel=50;
+try{sndJackpot();launchConfetti();}catch(e){}
+toast('🎯 ¡BARRA DE HÁBITOS COMPLETA! +30 puntos 🎉');
+}else{
+try{sndCheck();}catch(e){}
+toast('✅ '+nombre+' · Nivel '+state.habitLevel+'/50');
+}
+try{save();}catch(e){}update();
+}
+
+function reiniciarHabitos(){
+state.habitLevel=0;
+state.habitDays={};
+try{save();}catch(e){}update();
+toast('🔄 Barra de hábitos reiniciada');
+}
+
+function updateHabitBar(){
+var n=state.habitLevel||0;
+var c=document.getElementById('habitCount');if(c)c.textContent=n;
+var f=document.getElementById('habitFill');if(f)f.style.width=Math.min(100,n/50*100)+'%';
+var inf=document.getElementById('habitInfo');if(inf)inf.textContent=n+' / 50';
+// Atenuar botones ya pulsados hoy
+var hoy=new Date().toLocaleDateString();
+[['habEstudioBtn','estudio'],['habLecturaBtn','lectura'],['habLimpiezaBtn','limpieza'],['habMadrugarBtn','madrugar']].forEach(function(b){
+var btn=document.getElementById(b[0]);
+if(btn){
+if(state.habitDays&&state.habitDays[b[1]+'_'+hoy]){btn.style.opacity='.45';}
+else{btn.style.opacity='1';}
+}
+});
+// Si está completa, ofrecer reinicio
+var compl=document.getElementById('habitComplete');
+if(n>=50&&!compl){
+var card=document.getElementById('habitFill');
+if(card&&card.parentNode&&card.parentNode.parentNode){
+var rst=document.createElement('button');
+rst.id='habitComplete';
+rst.className='streak-btn';
+rst.style.cssText='background:linear-gradient(135deg,#FFD700,#FF8C00);color:#1a1a2e;margin-top:8px';
+rst.textContent='🔄 ¡Completada! Reiniciar barra';
+rst.addEventListener('click',reiniciarHabitos);
+card.parentNode.parentNode.appendChild(rst);
+}
+}else if(n<50&&compl){compl.remove();}
+}
+
+function subirCreatividad(){
+var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+inp.addEventListener('change',function(e){
+var file=e.target.files[0];if(!file)return;
+var rd=new FileReader();
+rd.onload=function(ev){
+var img=new Image();
+img.onload=function(){
+var canvas=document.createElement('canvas');var w=img.width,h=img.height;var max=400;
+if(w>h&&w>max){h=h*max/w;w=max;}else if(h>max){w=w*max/h;h=max;}
+canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
+var foto=canvas.toDataURL('image/jpeg',0.6);
+state.pts+=5;
+if(!state.history)state.history=[];
+state.history.push({icon:'🎨',text:'¡He sido creativo!',photo:foto,pts:5,cat:'manualidades',date:new Date().toLocaleDateString(),ts:Date.now()});
+try{save();}catch(er){toast('⚠️ Memoria llena, libera espacio');return;}
+try{sndDing();launchConfetti();}catch(er){}
+toast('🎨 ¡Creatividad registrada! +5 pts');
+update();
+};img.src=ev.target.result;
+};rd.readAsDataURL(file);
+});
+inp.click();
 }
 
 function huchaActual(){return Math.max(0,(state.huchaGanada||0)-(state.gastos||0));}
@@ -3522,6 +3631,11 @@ var _sb=document.getElementById('slotBtn');if(_sb)_sb.addEventListener('click',o
 var _bj=document.getElementById('blackjackBtn');if(_bj)_bj.addEventListener('click',openBlackjack);
 document.getElementById('gymBtn').addEventListener('click',function(){try{sndCheck();}catch(e){}addGymDay();});
 document.getElementById('zenBtn').addEventListener('click',function(){try{sndCheck();}catch(e){}addZenDay();});
+var _he=document.getElementById('habEstudioBtn');if(_he)_he.addEventListener('click',function(){addHabito('estudio','Estudio');});
+var _hl=document.getElementById('habLecturaBtn');if(_hl)_hl.addEventListener('click',function(){addHabito('lectura','Lectura');});
+var _hli=document.getElementById('habLimpiezaBtn');if(_hli)_hli.addEventListener('click',function(){addHabito('limpieza','Limpieza');});
+var _hm=document.getElementById('habMadrugarBtn');if(_hm)_hm.addEventListener('click',function(){addHabito('madrugar','Madrugar');});
+var _cr=document.getElementById('creatividadBtn');if(_cr)_cr.addEventListener('click',subirCreatividad);
 document.getElementById('sun10Btn').addEventListener('click',function(){try{sndStep();}catch(e){}addSunMinutes(10);});
 document.getElementById('sun30Btn').addEventListener('click',function(){try{sndStep();}catch(e){}addSunMinutes(30);});
 document.getElementById('confirmYes').addEventListener('click',()=>{localStorage.clear();location.reload();});
@@ -3687,6 +3801,30 @@ petCheckDay();
 if(!state.unlockedRewards)state.unlockedRewards={};
 if(!state.tierStart)state.tierStart=0;
 REWARDS.forEach(rw=>{if(rw.pts<=250){const enT=state.pts-state.tierStart;if(enT>=rw.pts)state.unlockedRewards['t'+state.tierStart+'_'+rw.pts]=1;}else{if(state.pts>=rw.pts)state.unlockedRewards[rw.pts]=1;}});
+// SINCRONIZAR: contar TODAS las veces que se ha desbloqueado cada premio (incluye tramos repetidos)
+if(!state.rewardHistory)state.rewardHistory=[];
+REWARDS.forEach(function(rw){
+if(rw.name==='Kit DIY'||rw.name==='DIY Pequeño')return; // los DIY se gestionan aparte
+var repetible=(rw.pts<=250);
+var vecesDesbloqueado=0;
+if(repetible){
+// Cuenta cuántos tramos de 200 ha superado el umbral rw.pts
+var tramoActual=Math.floor(state.pts/200);
+for(var t=0;t<=tramoActual;t++){
+var ptsEnEseTramo=(t<tramoActual)?200:(state.pts%200);
+if(ptsEnEseTramo>=rw.pts)vecesDesbloqueado++;
+}
+}else{
+vecesDesbloqueado=(state.pts>=rw.pts)?1:0;
+}
+// Cuántas hay ya en el historial
+var yaHay=state.rewardHistory.filter(function(h){return h.name===rw.name&&h.pts===rw.pts;}).length;
+// Añadir las que falten
+for(var k=yaHay;k<vecesDesbloqueado;k++){
+state.rewardHistory.push({icon:rw.icon,name:rw.name,pts:rw.pts,date:new Date().toLocaleDateString(),got:false,stars:0});
+}
+});
+try{save();}catch(e){}
 update();
 if((state.petDraws||0)>=13)blockDrawBtn();
 appReady=true;
