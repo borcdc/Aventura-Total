@@ -136,9 +136,10 @@ button{flex:1;padding:15px;border:none;border-radius:12px;font-size:1rem;font-we
 </div>
 
 <div class="stats">
-<div class="stat">
+<div class="stat" style="cursor:pointer" onclick="verDesglosePuntos()">
 <div class="stat-label">💰 Puntos</div>
 <div class="stat-value" id="pts">0</div>
+<div style="font-size:.5rem;color:rgba(255,255,255,.4);margin-top:2px">toca para ver desglose</div>
 </div>
 <div class="stat" id="huchaCard" style="cursor:pointer" onclick="abrirHucha()">
 <div class="stat-label" id="huchaLabel">🏦 Hucha</div>
@@ -535,7 +536,7 @@ card.appendChild(tit);card.appendChild(cont);
 // Pasos claros
 var pasos=document.createElement('div');
 pasos.style.cssText='font-size:.76rem;color:rgba(255,255,255,.85);text-align:left;background:rgba(255,255,255,.06);border-radius:10px;padding:10px;margin-bottom:12px;line-height:1.5';
-pasos.innerHTML='<b>C\u00f3mo guardarla:</b><br>1\ufe0f\u20e3 Mant\u00e9n el dedo pulsado sobre la foto<br>2\ufe0f\u20e3 Toca <b>\u201cGuardar en Fotos\u201d</b> (o A\u00f1adir a Fotos)<br>3\ufe0f\u20e3 Pulsa <b>Siguiente \u27a1\ufe0f</b> para la siguiente';
+pasos.innerHTML='<b>Cómo guardarla:</b><br>1️⃣ Mantén el dedo pulsado sobre la foto<br>2️⃣ Toca <b>“Guardar en Fotos”</b> (o Añadir a Fotos)<br>3️⃣ Pulsa <b>Siguiente ➡️</b> para la siguiente';
 card.appendChild(pasos);
 var im=document.createElement('img');im.src=f.src;
 im.style.cssText='width:100%;border-radius:12px;max-height:240px;object-fit:cover;margin-bottom:6px;border:2px solid #E67E22';
@@ -545,12 +546,12 @@ card.appendChild(cap);
 var nav=document.createElement('div');nav.style.cssText='display:flex;gap:8px;margin-bottom:8px';
 var prevB=document.createElement('button');
 prevB.style.cssText='flex:1;padding:11px;background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;opacity:'+(idx===0?'.4':'1');
-prevB.textContent='\u2b05\ufe0f Anterior';
+prevB.textContent='⬅️ Anterior';
 prevB.addEventListener('click',function(){if(idx>0){idx--;pintar();}});
 var nextB=document.createElement('button');
 nextB.style.cssText='flex:1;padding:11px;background:#E67E22;color:#fff;border:none;border-radius:10px;font-weight:800;cursor:pointer';
-if(idx<fotos.length-1){nextB.textContent='Siguiente \u27a1\ufe0f';nextB.addEventListener('click',function(){idx++;pintar();});}
-else{nextB.textContent='\u2705 Terminar';nextB.addEventListener('click',function(){overlay.remove();toast('\ud83d\udcf8 \u00a1Listo! Crea un \u00e1lbum en Fotos para organizarlas');});}
+if(idx<fotos.length-1){nextB.textContent='Siguiente ➡️';nextB.addEventListener('click',function(){idx++;pintar();});}
+else{nextB.textContent='✅ Terminar';nextB.addEventListener('click',function(){overlay.remove();toast('\ud83d\udcf8 ¡Listo! Crea un álbum en Fotos para organizarlas');});}
 nav.appendChild(prevB);nav.appendChild(nextB);
 card.appendChild(nav);
 var closeBtn=document.createElement('button');
@@ -583,7 +584,7 @@ if(txt)txt.textContent=m.pct+'% ('+m.kb+' KB)';
 // Aviso automatico al 80%
 if(m.pct>=80&&window._memWarned!==true){
 window._memWarned=true;
-setTimeout(function(){toast('⚠️ Memoria al '+m.pct+'%. Exporta tu c\u00f3digo y descarga fotos para liberar');},600);
+setTimeout(function(){toast('⚠️ Memoria al '+m.pct+'%. Exporta tu código y descarga fotos para liberar');},600);
 }
 if(m.pct<70)window._memWarned=false;
 }
@@ -605,7 +606,7 @@ var overlay=document.createElement('div');
 overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px';
 var card=document.createElement('div');
 card.style.cssText='background:linear-gradient(135deg,#1a1a2e,#2C2C54);border:3px solid #3498DB;border-radius:20px;padding:22px;max-width:340px;width:100%;text-align:center';
-card.innerHTML='<div style="font-size:1.15rem;font-weight:900;color:#3498DB;margin-bottom:8px">📤 Código de respaldo</div><div style="font-size:.78rem;color:rgba(255,255,255,.7);margin-bottom:12px">Copia este texto y gu\u00e1rdalo en tus notas. Sirve para restaurar tu progreso.</div>';
+card.innerHTML='<div style="font-size:1.15rem;font-weight:900;color:#3498DB;margin-bottom:8px">📤 Código de respaldo</div><div style="font-size:.78rem;color:rgba(255,255,255,.7);margin-bottom:12px">Copia este texto y guárdalo en tus notas. Sirve para restaurar tu progreso.</div>';
 var ta=document.createElement('textarea');
 ta.value=codigo;
 ta.style.cssText='width:100%;height:120px;border-radius:10px;padding:10px;font-size:.7rem;border:1px solid #3498DB;background:rgba(0,0,0,.3);color:#fff;resize:none;margin-bottom:12px';
@@ -636,9 +637,9 @@ var overlay=document.createElement('div');
 overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px';
 var card=document.createElement('div');
 card.style.cssText='background:linear-gradient(135deg,#1a1a2e,#2C2C54);border:3px solid #9B59B6;border-radius:20px;padding:22px;max-width:340px;width:100%;text-align:center';
-card.innerHTML='<div style="font-size:1.15rem;font-weight:900;color:#9B59B6;margin-bottom:8px">📥 Importar respaldo</div><div style="font-size:.78rem;color:rgba(255,255,255,.7);margin-bottom:12px">Pega aqu\u00ed el c\u00f3digo que copiaste antes. Reemplazar\u00e1 tu progreso actual.</div>';
+card.innerHTML='<div style="font-size:1.15rem;font-weight:900;color:#9B59B6;margin-bottom:8px">📥 Importar respaldo</div><div style="font-size:.78rem;color:rgba(255,255,255,.7);margin-bottom:12px">Pega aquí el código que copiaste antes. Reemplazará tu progreso actual.</div>';
 var ta=document.createElement('textarea');
-ta.placeholder='Pega aqu\u00ed el c\u00f3digo...';
+ta.placeholder='Pega aquí el código...';
 ta.style.cssText='width:100%;height:120px;border-radius:10px;padding:10px;font-size:.7rem;border:1px solid #9B59B6;background:rgba(0,0,0,.3);color:#fff;resize:none;margin-bottom:12px';
 card.appendChild(ta);
 var okBtn=document.createElement('button');
@@ -653,6 +654,7 @@ try{datos=JSON.parse(txt);}catch(e2){datos=null;}
 }
 if(!datos||typeof datos!=='object'){toast('⚠️ Código no válido');return;}
 state=datos;
+window._lastPts=state.pts;
 // Sanear iconos de cámara antiguos (📸/📷): recuperar emoji original del premio
 if(state.history){state.history.forEach(function(h){
 if(h.icon==='📸'||h.icon==='📷'){
@@ -677,6 +679,17 @@ overlay.appendChild(card);document.body.appendChild(overlay);
 }
 
 function save(){
+// Registrar cambios de puntos en el historial de puntuación
+try{
+if(typeof window._lastPts==='number'&&state.pts!==window._lastPts){
+var delta=state.pts-window._lastPts;
+if(!Array.isArray(state.ptsLog))state.ptsLog=[];
+state.ptsLog.push({d:delta,total:state.pts,motivo:(window._ptsReason||(delta>0?'Puntos ganados':'Puntos restados')),fecha:new Date().toLocaleDateString(),ts:Date.now()});
+if(state.ptsLog.length>200)state.ptsLog=state.ptsLog.slice(-200);
+window._ptsReason='';
+}
+window._lastPts=state.pts;
+}catch(e){}
 try{
 localStorage.setItem('av4',JSON.stringify(state));
 }catch(e){
@@ -706,6 +719,13 @@ if(typeof state.poopPenaltyDay!=='string')state.poopPenaltyDay='';
 if(typeof state.sunMinutes!=='number'||isNaN(state.sunMinutes))state.sunMinutes=0;
 if(typeof state.petWalks!=='number'||isNaN(state.petWalks))state.petWalks=0;
 if(typeof state.petDraws!=='number'||isNaN(state.petDraws))state.petDraws=0;
+window._lastPts=state.pts;
+}
+
+// Recalcula los puntos a partir del historial real, arreglando tarjetas que se guardaron con 0 puntos por error.
+function recalcularPuntos(){
+// Función desactivada: no se ajustan puntos automáticamente.
+return 0;
 }
 
 function openRewardDetail(i){
@@ -763,21 +783,21 @@ var overlay=document.createElement('div');
 overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px';
 var card=document.createElement('div');
 card.style.cssText='background:linear-gradient(135deg,#1a1a2e,#2C2C54);border:3px solid #FFD700;border-radius:20px;padding:22px;max-width:320px;width:100%;text-align:center';
-card.innerHTML='<div style="font-size:2.5rem;margin-bottom:6px">'+k.icon+'</div><div style="font-size:1rem;font-weight:900;color:#fff;margin-bottom:4px">'+nombre+'</div><div style="font-size:.8rem;color:rgba(255,255,255,.7);margin-bottom:14px">\u00bfCu\u00e1nto te ha costado de verdad? (aprox. '+k.kit+'\u20ac)</div>';
+card.innerHTML='<div style="font-size:2.5rem;margin-bottom:6px">'+k.icon+'</div><div style="font-size:1rem;font-weight:900;color:#fff;margin-bottom:4px">'+nombre+'</div><div style="font-size:.8rem;color:rgba(255,255,255,.7);margin-bottom:14px">¿Cuánto te ha costado de verdad? (aprox. '+k.kit+'€)</div>';
 var saldo=huchaActual();
 var input=document.createElement('input');
 input.type='number';input.inputMode='decimal';input.value=k.kit;input.min='0';
 input.style.cssText='width:100%;padding:14px;font-size:1.3rem;text-align:center;border-radius:12px;border:2px solid #FFD700;background:rgba(0,0,0,.3);color:#FFD700;font-weight:800;margin-bottom:6px';
 card.appendChild(input);
-var saldoMsg=document.createElement('div');saldoMsg.style.cssText='font-size:.72rem;color:rgba(255,255,255,.6);margin-bottom:14px';saldoMsg.textContent='Tienes '+saldo+'\u20ac en la hucha';
+var saldoMsg=document.createElement('div');saldoMsg.style.cssText='font-size:.72rem;color:rgba(255,255,255,.6);margin-bottom:14px';saldoMsg.textContent='Tienes '+saldo+'€ en la hucha';
 card.appendChild(saldoMsg);
 var okBtn=document.createElement('button');
 okBtn.style.cssText='width:100%;padding:13px;background:linear-gradient(135deg,#27AE60,#2ECC71);color:#fff;border:none;border-radius:11px;font-weight:800;cursor:pointer;margin-bottom:8px;font-size:.9rem';
 okBtn.textContent='🛒 Confirmar compra';
 okBtn.addEventListener('click',function(){
 var precio=parseFloat(input.value);
-if(isNaN(precio)||precio<0){toast('Pon un precio v\u00e1lido');return;}
-if(precio>saldo){toast('⚠️ No tienes suficiente en la hucha ('+saldo+'\u20ac)');return;}
+if(isNaN(precio)||precio<0){toast('Pon un precio válido');return;}
+if(precio>saldo){toast('⚠️ No tienes suficiente en la hucha ('+saldo+'€)');return;}
 if(!state.kitsComprados)state.kitsComprados=[];
 state.kitsComprados.push(k.id);
 state.gastos=(state.gastos||0)+precio;
@@ -786,7 +806,7 @@ state.preciosReales[k.id]=precio;
 save();update();
 try{sndCoin();launchConfetti();}catch(e){}
 overlay.remove();
-toast('🛒 ¡'+nombre+' comprado! -'+precio+'\u20ac');
+toast('🛒 ¡'+nombre+' comprado! -'+precio+'€');
 });
 card.appendChild(okBtn);
 var cancelBtn=document.createElement('button');
@@ -1142,7 +1162,7 @@ showRecycleChoice(c);
 });
 document.getElementById('prizeNo').addEventListener('click',()=>{
 state.huchaGanada+=10;
-state.pts=Math.max(0,(state.pts||0)-5);
+window._ptsReason='🚫 Rechazó regalo';state.pts=Math.max(0,(state.pts||0)-5);
 state.done.push(c.id);
 if(!state.history)state.history=[];
 state.history.push({icon:'🚫',text:'Rechazó: '+c.text,photo:'',pts:0,hucha:10,date:new Date().toLocaleDateString(),ts:Date.now()});
@@ -1182,7 +1202,7 @@ matched.push(a,b);aciertos++;flipped=[];lock=false;
 o.querySelector('#memMsg').textContent='✅ '+aciertos+'/8 parejas';
 if(matched.length===pairs.length){
 finished=true;
-state.pts+=aciertos;state.done.push(510);save();update();
+window._ptsReason='🧠 Minijuego Memoria';state.pts+=aciertos;state.done.push(510);save();update();
 try{sndGameWin();}catch(e){}
 o.querySelector('#memMsg').textContent='🎉 ¡Completado! +'+aciertos+' pts';
 o.querySelector('#memQuit').textContent='✅ Cerrar';
@@ -1197,7 +1217,7 @@ grid.querySelector('[data-i="'+b+'"]').textContent='';grid.querySelector('[data-
 flipped=[];lock=false;
 if(intentos>=MAX_INTENTOS&&!finished){
 finished=true;
-if(aciertos>0){state.pts+=aciertos;save();update();}
+if(aciertos>0){window._ptsReason='🔢 Minijuego Matemáticas';state.pts+=aciertos;save();update();}
 try{sndGameLose();}catch(e){}
 o.querySelector('#memMsg').textContent='😵 ¡Sin intentos! Conseguiste '+aciertos+'/8 (+'+aciertos+' pts)';
 o.querySelector('#memQuit').textContent='✅ Cerrar';
@@ -1212,7 +1232,7 @@ grid.style.opacity='.5';grid.style.pointerEvents='none';
 grid.appendChild(card);
 });
 o.querySelector('#memQuit').addEventListener('click',()=>{
-if(!finished){state.pts=Math.max(0,state.pts-2);save();update();toast('😬 Abandonaste: -2 pts');}
+if(!finished){window._ptsReason='😬 Abandonó minijuego';state.pts=Math.max(0,state.pts-2);save();update();toast('😬 Abandonaste: -2 pts');}
 o.remove();
 });
 }
@@ -1236,7 +1256,7 @@ const o=gameOverlay();
 function render(){
 if(idx>=qs.length){
 finished=true;
-state.pts+=aciertos;state.done.push(511);save();update();
+window._ptsReason='🔢 Minijuego Matemáticas';state.pts+=aciertos;state.done.push(511);save();update();
 o.innerHTML='';
 const engDone=document.createElement('div');engDone.innerHTML='<div style="font-size:3rem;margin-bottom:10px">🎉</div><div style="font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:8px">¡Completado!</div><div style="font-size:1.1rem;color:#FFD700;font-weight:800;margin-bottom:20px">'+aciertos+'/'+qs.length+' aciertos · +'+aciertos+' pts</div>';
 const engCloseBtn=document.createElement('button');engCloseBtn.style.cssText='padding:12px 30px;background:#2ECC71;color:#1a1a2e;border:none;border-radius:10px;font-weight:800;cursor:pointer';engCloseBtn.textContent='✅ Cerrar';engCloseBtn.addEventListener('click',()=>o.remove());
@@ -1259,7 +1279,7 @@ setTimeout(()=>{idx++;render();},800);
 opts.appendChild(b);
 });
 o.querySelector('#engQuit').addEventListener('click',()=>{
-if(!finished){state.pts=Math.max(0,state.pts-2);save();update();toast('😬 Abandonaste: -2 pts');}
+if(!finished){window._ptsReason='😬 Abandonó minijuego';state.pts=Math.max(0,state.pts-2);save();update();toast('😬 Abandonaste: -2 pts');}
 o.remove();
 });
 }
@@ -1273,7 +1293,7 @@ const o=gameOverlay();
 function nextQ(){
 if(q>=total){
 finished=true;
-state.pts+=score;state.done.push(511);save();update();
+window._ptsReason='⚡ Minijuego Reacción';state.pts+=score;state.done.push(511);save();update();
 try{sndGameWin();}catch(e){}
 o.innerHTML='<div style="font-size:3rem;margin-bottom:10px">🔢</div><div style="font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:8px">¡Completado!</div><div style="font-size:1.1rem;color:#FFD700;font-weight:800;margin-bottom:20px">'+score+'/'+total+' correctas · +'+score+' pts</div><button id="mcl" style="padding:12px 30px;background:#2ECC71;color:#1a1a2e;border:none;border-radius:10px;font-weight:800;cursor:pointer">✅ Cerrar</button>';
 o.querySelector('#mcl').addEventListener('click',()=>o.remove());return;
@@ -1303,7 +1323,7 @@ q++;setTimeout(()=>nextQ(),700);
 mopts.appendChild(b2);
 });
 iv2=setInterval(()=>{tLeft--;const el=o.querySelector('#mtimer');if(el)el.textContent='⏱ '+tLeft;if(tLeft<=0){clearInterval(iv2);q++;nextQ();}},1000);
-o.querySelector('#mquit').addEventListener('click',()=>{clearInterval(iv2);if(!finished){state.pts=Math.max(0,state.pts-2);save();update();toast('😬 Abandonaste: -2 pts');}o.remove();});
+o.querySelector('#mquit').addEventListener('click',()=>{clearInterval(iv2);if(!finished){window._ptsReason='😬 Abandonó minijuego';state.pts=Math.max(0,state.pts-2);save();update();toast('😬 Abandonaste: -2 pts');}o.remove();});
 }
 nextQ();
 }
@@ -1316,7 +1336,7 @@ const o=gameOverlay();
 function nextRound(){
 if(round>=total){
 finished=true;
-state.pts+=score;state.done.push(512);save();update();
+window._ptsReason='⚡ Minijuego Reacción';state.pts+=score;state.done.push(512);save();update();
 try{sndGameWin();}catch(e){}
 o.innerHTML='<div style="font-size:3rem;margin-bottom:10px">⚡</div><div style="font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:8px">¡Completado!</div><div style="font-size:1.1rem;color:#FFD700;font-weight:800;margin-bottom:20px">'+score+'/'+total+' · +'+score+' pts</div><button id="rcl" style="padding:12px 30px;background:#2ECC71;color:#1a1a2e;border:none;border-radius:10px;font-weight:800;cursor:pointer">✅ Cerrar</button>';
 o.querySelector('#rcl').addEventListener('click',()=>o.remove());return;
@@ -1345,7 +1365,7 @@ round++;setTimeout(()=>nextRound(),800);
 grid.appendChild(b);
 });
 iv3=setInterval(()=>{tLeft--;const el=o.querySelector('#rtimer');if(el)el.textContent='⏱ '+tLeft;if(tLeft<=0){clearInterval(iv3);round++;nextRound();}},1000);
-o.querySelector('#rquit').addEventListener('click',()=>{clearInterval(iv3);if(!finished){state.pts=Math.max(0,state.pts-2);save();update();toast('😬 Abandonaste: -2 pts');}o.remove();});
+o.querySelector('#rquit').addEventListener('click',()=>{clearInterval(iv3);if(!finished){window._ptsReason='😬 Abandonó minijuego';state.pts=Math.max(0,state.pts-2);save();update();toast('😬 Abandonaste: -2 pts');}o.remove();});
 }
 nextRound();
 }
@@ -1370,7 +1390,7 @@ userSeq.push(em);
 b.style.background='rgba(255,215,0,.3)';
 setTimeout(()=>b.style.background='rgba(255,255,255,.1)',200);
 const ok=userSeq.every((s,i2)=>s===seq[i2]);
-if(!ok){o.querySelector('#seqMsg').textContent='❌ ¡Error! Completaste '+score+' niveles';score=Math.max(0,score);state.pts+=score;state.done.push(513);save();update();finished=true;setTimeout(()=>o.remove(),1500);return;}
+if(!ok){o.querySelector('#seqMsg').textContent='❌ ¡Error! Completaste '+score+' niveles';score=Math.max(0,score);window._ptsReason='🔢 Minijuego Secuencia';state.pts+=score;state.done.push(513);save();update();finished=true;setTimeout(()=>o.remove(),1500);return;}
 if(userSeq.length===seq.length){score++;o.querySelector('#seqMsg').textContent='✅ Nivel '+level+' superado! +1 pt';grid.style.pointerEvents='none';setTimeout(()=>showSeq(),1200);}
 });
 grid.appendChild(b);
@@ -1382,7 +1402,7 @@ disp.textContent=seq[i2]||'';i2++;
 if(i2>seq.length){clearInterval(iv4);disp.textContent='▶️ Tu turno';grid.style.pointerEvents='auto';}
 },700);
 o.querySelector('#squit').addEventListener('click',()=>{
-if(!finished){state.pts=Math.max(0,state.pts-2);save();update();toast('😬 Abandonaste: -2 pts');}o.remove();
+if(!finished){window._ptsReason='😬 Abandonó minijuego';state.pts=Math.max(0,state.pts-2);save();update();toast('😬 Abandonaste: -2 pts');}o.remove();
 });
 }
 showSeq();
@@ -1531,7 +1551,7 @@ if(tiempo<=0){
 jugando=false;limpiar();
 var old=board.querySelector('.perrito');if(old)old.remove();
 var ganados=Math.floor(score/3);
-if(ganados>0){state.pts=(state.pts||0)+ganados;save();update();}
+if(ganados>0){window._ptsReason='🐶 Atrapa al perrito';state.pts=(state.pts||0)+ganados;save();update();}
 try{sndGameWin();launchConfetti();}catch(e){}
 msg.textContent='🎉 ¡Atrapaste '+score+' perritos! +'+ganados+' pts';
 closeBtn.textContent='✅ Cerrar';closeBtn.style.background='#2ECC71';closeBtn.style.color='#1a1a2e';
@@ -1771,7 +1791,7 @@ state.habitLevel=(state.habitLevel||0)+1;
 var claves=Object.keys(state.habitDays);
 if(claves.length>40){claves.slice(0,claves.length-20).forEach(function(k){delete state.habitDays[k];});}
 if(state.habitLevel>=50){
-state.pts+=30;
+window._ptsReason='🎯 Barra de hábitos completa';state.pts+=30;
 state.habitLevel=50;
 try{sndJackpot();launchConfetti();}catch(e){}
 toast('🎯 ¡BARRA DE HÁBITOS COMPLETA! +30 puntos 🎉');
@@ -1842,6 +1862,96 @@ update();
 };rd.readAsDataURL(file);
 });
 inp.click();
+}
+
+function verDesglosePuntos(){
+var log=Array.isArray(state.ptsLog)?state.ptsLog:[];
+var nombres={manualidades:'🎨 Manualidad',cocina:'🍳 Cocina',deporte:'💪 Deporte',bienestar:'🧖 Bienestar',estudio:'📚 Estudio',ahorro:'💰 Ahorro',aire:'🌳 Aire libre',declutter:'🧹 Orden',ocio:'🎮 Ocio',premio:'🎁 Premios',vive:'🧘 Vive la vida',mascota:'🐕 Mascota',juego:'🎰 Minijuegos',ruleta:'🎡 Ruleta',otros:'✨ Otros'};
+// 1) Sumar historial antiguo por categoria
+var sum={};
+(state.history||[]).forEach(function(hh){
+var p=hh.pts||0;if(p<=0)return;
+var cat=hh.cat;
+// Si no tiene categoria, buscar la tarjeta por texto en CARDS
+if(!cat||!nombres[cat]){
+var t=(hh.text||'').replace(/^(🎁|🏆|🧘|☀️|♻️|🚫|🛍️)\s*/,'').replace(/ \(\d+€[^)]*\)/,'').trim();
+var cf=CARDS.find(function(c){if(!c.text||!t)return false;var ct=c.text.replace(/^🛍️\s*/,'').replace(/ \(\d+€[^)]*\)/,'').trim();return ct===t||ct.indexOf(t)>-1||t.indexOf(ct)>-1;});
+if(cf&&cf.cat)cat=cf.cat;
+}
+if(!cat)cat='otros';
+var k=nombres[cat]||('✨ '+cat);
+if(!sum[k])sum[k]={pos:0,neg:0,n:0};
+sum[k].pos+=p;sum[k].n++;
+});
+// 2) Casino/minijuegos estimado (puntos que no estan en history): total - historial
+var sumaHist=0;Object.keys(sum).forEach(function(k){sumaHist+=sum[k].pos;});
+// 3) Sumar lo POSITIVO registrado en ptsLog por motivo (lo nuevo). Las restas se gestionan abajo.
+log.forEach(function(e){
+if(e.d>0){
+var m=e.motivo||'✨ Otros';
+if(!sum[m])sum[m]={pos:0,neg:0,n:0};
+sum[m].pos+=e.d;sum[m].n++;
+}
+});
+// Penalizaciones: solo las registradas en ptsLog (nuevas, desde ahora)
+var penas={};
+log.forEach(function(e){
+if(e.d<0){
+var m=e.motivo||'⚠️ Penalización';
+if(!penas[m])penas[m]={neg:0,n:0};
+penas[m].neg+=e.d;penas[m].n++;
+}
+});
+// Casino/otros positivos = lo que falta para cuadrar con el total actual
+var contado=0;Object.keys(sum).forEach(function(k){contado+=sum[k].pos;});
+var negLog=0;Object.keys(penas).forEach(function(k){negLog+=penas[k].neg;});
+var difCasino=(state.pts||0)-contado-negLog;
+if(difCasino>0){var kc='🎰 Casino/minijuegos';if(!sum[kc])sum[kc]={pos:0,neg:0,n:0};sum[kc].pos+=difCasino;}
+// Añadir las penalizaciones nuevas al sum para mostrarlas abajo
+Object.keys(penas).forEach(function(k){
+if(!sum[k])sum[k]={pos:0,neg:0,n:0};
+sum[k].neg+=penas[k].neg;sum[k].n+=penas[k].n;
+});
+var ov=document.createElement('div');
+ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:600;display:flex;align-items:center;justify-content:center;padding:18px;overflow-y:auto';
+var card=document.createElement('div');
+card.style.cssText='background:linear-gradient(135deg,#1a1a2e,#2C2C54);border:3px solid #FFD700;border-radius:20px;padding:22px;max-width:340px;width:100%;max-height:85vh;overflow-y:auto';
+var h='<div style="font-size:2rem;text-align:center;margin-bottom:4px">💰</div>';
+h+='<div style="font-size:1.1rem;font-weight:900;color:#FFD700;text-align:center;margin-bottom:2px">Desglose de puntos</div>';
+h+='<div style="font-size:1.6rem;font-weight:900;color:#fff;text-align:center;margin-bottom:14px">Total: '+(state.pts||0)+' pts</div>';
+var keys=Object.keys(sum);
+var pos=keys.filter(function(k){return sum[k].pos>0;}).sort(function(a,b){return sum[b].pos-sum[a].pos;});
+var neg=keys.filter(function(k){return sum[k].neg<0;}).sort(function(a,b){return sum[a].neg-sum[b].neg;});
+if(pos.length){
+h+='<div style="font-size:.8rem;color:#2ECC71;font-weight:800;margin-bottom:6px;border-bottom:1px solid rgba(46,204,113,.3);padding-bottom:4px">✅ Lo que SUMA:</div>';
+pos.forEach(function(k){
+h+='<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:.85rem;color:#fff;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+k+'</span><span style="font-weight:800;color:#2ECC71">+'+sum[k].pos+'</span></div>';
+});
+}
+if(neg.length){
+h+='<div style="font-size:.8rem;color:#E74C3C;font-weight:800;margin:12px 0 6px;border-bottom:1px solid rgba(231,76,60,.3);padding-bottom:4px">⚠️ Lo que RESTA:</div>';
+neg.forEach(function(k){
+h+='<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:.85rem;color:#fff;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+k+'</span><span style="font-weight:800;color:#E74C3C">'+sum[k].neg+'</span></div>';
+});
+}
+h+='<div style="display:flex;justify-content:space-between;padding:10px 0 4px;font-size:.95rem;font-weight:900;color:#FFD700;border-top:2px solid rgba(255,215,0,.3);margin-top:8px"><span>TOTAL</span><span>'+(state.pts||0)+' pts</span></div>';
+var logR=log.slice().reverse();
+if(logR.length>0){
+h+='<div style="font-size:.78rem;color:rgba(255,255,255,.7);margin:14px 0 6px;border-bottom:1px solid rgba(255,255,255,.15);padding-bottom:6px">📜 Movimientos recientes:</div>';
+logR.slice(0,30).forEach(function(e){
+var pp=e.d>=0;var col=pp?'#2ECC71':'#E74C3C';var sg=pp?'+':'';
+h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:.78rem;color:#fff;border-bottom:1px solid rgba(255,255,255,.05)"><span style="flex:1">'+(e.motivo||'Cambio')+'<br><span style="font-size:.6rem;color:rgba(255,255,255,.4)">'+(e.fecha||'')+'</span></span><span style="font-weight:800;color:'+col+';margin-left:8px">'+sg+e.d+'</span></div>';
+});
+}else{
+h+='<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px;margin-top:12px;font-size:.72rem;color:rgba(255,255,255,.6);line-height:1.5">📜 La lista detallada de movimientos se ira llenando segun juegues a partir de ahora.</div>';
+}
+card.innerHTML=h;
+var cBtn=document.createElement('button');
+cBtn.style.cssText='width:100%;padding:12px;background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:11px;font-weight:700;cursor:pointer;margin-top:14px';
+cBtn.textContent='Cerrar';
+cBtn.addEventListener('click',function(){ov.remove();});
+card.appendChild(cBtn);
+ov.appendChild(card);document.body.appendChild(ov);
 }
 
 function huchaActual(){return Math.max(0,(state.huchaGanada||0)-(state.gastos||0));}
@@ -1937,7 +2047,7 @@ premio=2;txt='🙂 ¡Dos iguales! +2 pts';try{sndCoin();}catch(e){}
 }else{
 txt='😢 Nada... ¡reintenta!';try{sndGameLose();}catch(e){}
 }
-if(premio>0)state.pts+=premio;
+if(premio>0){window._ptsReason='🎰 Casino';}if(premio>0)state.pts+=premio;
 if(premioEur>0)state.huchaGanada+=premioEur;
 if(premio>0||premioEur>0){save();update();try{launchConfetti();}catch(e){}}
 msg.textContent=txt;
@@ -1992,7 +2102,7 @@ if(resultado==='gana'){
 var bj21=suma(jugador)===21;
 var p=bj21?30:15;
 var e=bj21?10:0;
-state.pts+=p;if(e)state.huchaGanada+=e;
+window._ptsReason='🎰 Casino';state.pts+=p;if(e)state.huchaGanada+=e;
 save();update();try{sndPrize();launchConfetti();}catch(er){}
 if(bj21){
 var pc=darPremioCapricho();
@@ -2032,18 +2142,18 @@ function spinRoulette(){
 try{sndRoulette();}catch(e){}
 const premios=[
 {txt:'+30€ a la hucha',color:'#2ECC71',act:()=>{state.huchaGanada+=30;toast('🎉 +30€ a la hucha!');}},
-{txt:'+15 puntos',color:'#FFD700',act:()=>{state.pts+=15;try{sndCoin();}catch(e){}toast('🎉 +15 puntos!');}},
-{txt:'-10 puntos',color:'#E74C3C',act:()=>{state.pts=Math.max(0,state.pts-10);toast('😅 -10 puntos');}},
-{txt:'Premio capricho',color:'#FF6B6B',act:()=>{if(Math.random()<0.5){state.pts+=15;toast('🎉 +15 puntos!');try{sndCoin();}catch(e){}return '+15 puntos (¡casi premio!)';}const p=CARDS.filter(x=>x.cat==='premio');const r=p[Math.floor(Math.random()*p.length)];if(!state.history)state.history=[];state.history.push({icon:r.icon,text:'🎁 '+r.text,photo:'',pts:0,cat:'premio',date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});toast('🎁 '+r.text);return r.icon+' '+r.text;}},
-{txt:'Regalo Vive la Vida',color:'#9B59B6',act:()=>{const r=VIVE_REGALOS[Math.floor(Math.random()*VIVE_REGALOS.length)];state.pts+=5;if(!state.history)state.history=[];state.history.push({icon:r.icon,text:'🎁 '+r.text,photo:'',pts:5,cat:'vive',date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});toast('🎁 '+r.text+' +5 pts');return r.icon+' '+r.text+' (+5 pts)';}},
-{txt:'Premio Zen',color:'#C39BD3',act:()=>{const r=ZEN_PREMIOS[Math.floor(Math.random()*ZEN_PREMIOS.length)];state.pts+=5;if(!state.history)state.history=[];state.history.push({icon:r.icon,text:'🧘 '+r.text,photo:'',pts:5,cat:'vive',date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});toast('🧘 '+r.text+' +5 pts');return r.icon+' '+r.text+' (+5 pts)';}},
+{txt:'+15 puntos',color:'#FFD700',act:()=>{window._ptsReason='🎡 Ruleta: +15';state.pts+=15;try{sndCoin();}catch(e){}toast('🎉 +15 puntos!');}},
+{txt:'-10 puntos',color:'#E74C3C',act:()=>{window._ptsReason='🎡 Ruleta: -10';state.pts=Math.max(0,state.pts-10);toast('😅 -10 puntos');}},
+{txt:'Premio capricho',color:'#FF6B6B',act:()=>{if(Math.random()<0.5){window._ptsReason='🎡 Ruleta: +15';state.pts+=15;toast('🎉 +15 puntos!');try{sndCoin();}catch(e){}return '+15 puntos (¡casi premio!)';}const p=CARDS.filter(x=>x.cat==='premio');const r=p[Math.floor(Math.random()*p.length)];if(!state.history)state.history=[];state.history.push({icon:r.icon,text:'🎁 '+r.text,photo:'',pts:0,cat:'premio',date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});toast('🎁 '+r.text);return r.icon+' '+r.text;}},
+{txt:'Regalo Vive la Vida',color:'#9B59B6',act:()=>{const r=VIVE_REGALOS[Math.floor(Math.random()*VIVE_REGALOS.length)];window._ptsReason='🎁 Vive la Vida';state.pts+=5;if(!state.history)state.history=[];state.history.push({icon:r.icon,text:'🎁 '+r.text,photo:'',pts:5,cat:'vive',date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});toast('🎁 '+r.text+' +5 pts');return r.icon+' '+r.text+' (+5 pts)';}},
+{txt:'Premio Zen',color:'#C39BD3',act:()=>{const r=ZEN_PREMIOS[Math.floor(Math.random()*ZEN_PREMIOS.length)];window._ptsReason='🧘 Premio Zen';state.pts+=5;if(!state.history)state.history=[];state.history.push({icon:r.icon,text:'🧘 '+r.text,photo:'',pts:5,cat:'vive',date:new Date().toLocaleDateString(),ts:Date.now(),pendienteCanjear:true});toast('🧘 '+r.text+' +5 pts');return r.icon+' '+r.text+' (+5 pts)';}},
 {txt:'+20€ ahorro',color:'#16A085',act:()=>{state.huchaGanada+=20;toast('💰 +20€ a la hucha!');}},
 {txt:'¡Elige un premio!',color:'#4ECDC4',act:()=>{setTimeout(function(){showCheapPrizeChoice();},500);return '¡Elige tu premio barato!';}},
 {txt:'+50€ a la hucha',color:'#27AE60',act:()=>{state.huchaGanada+=50;try{sndJackpot();}catch(e){}toast('💰 ¡JACKPOT! +50€ a la hucha!');}},
-{txt:'+25 puntos',color:'#F39C12',act:()=>{state.pts+=25;try{sndCoin();}catch(e){}toast('🎉 +25 puntos!');}},
-{txt:'-5 puntos',color:'#C0392B',act:()=>{state.pts=Math.max(0,state.pts-5);toast('😬 -5 puntos');}},
-{txt:'🎊 +40 PUNTOS!',color:'#FF1493',rare:true,confetti:true,act:()=>{state.pts+=40;try{sndJackpot();}catch(e){}toast('🎊 ¡JACKPOT! +40 puntos!');}},
-{txt:'💸 BANCARROTA -40',color:'#000000',rare:true,act:()=>{state.pts=Math.max(0,state.pts-40);toast('💸 ¡Bancarrota! -40 puntos');}}
+{txt:'+25 puntos',color:'#F39C12',act:()=>{window._ptsReason='🎡 Ruleta: +25';state.pts+=25;try{sndCoin();}catch(e){}toast('🎉 +25 puntos!');}},
+{txt:'-5 puntos',color:'#C0392B',act:()=>{window._ptsReason='🎡 Ruleta: -5';state.pts=Math.max(0,state.pts-5);toast('😬 -5 puntos');}},
+{txt:'🎊 +40 PUNTOS!',color:'#FF1493',rare:true,confetti:true,act:()=>{window._ptsReason='🎊 Ruleta: Jackpot';state.pts+=40;try{sndJackpot();}catch(e){}toast('🎊 ¡JACKPOT! +40 puntos!');}},
+{txt:'💸 BANCARROTA -40',color:'#000000',rare:true,act:()=>{window._ptsReason='💸 Ruleta: Bancarrota';state.pts=Math.max(0,state.pts-40);toast('💸 ¡Bancarrota! -40 puntos');}}
 ];
 // Pesos: las raras (+40 / -40) salen poco
 const weights=premios.map(p=>p.rare?1:8);
@@ -2560,7 +2670,7 @@ if(state.recordSwitch%2===0)setTimeout(animarObjetivo,2000);
 else setTimeout(recordarConstancia,2000);
 }
 if(state.petDraws>=10){
-state.pts=Math.max(0,(state.pts||0)-1);
+window._ptsReason='🐕 Perro cansado';state.pts=Math.max(0,(state.pts||0)-1);
 save();update();
 showTiredAlert(false);
 }
@@ -2582,7 +2692,7 @@ let c=av[Math.floor(Math.random()*av.length)];
 // Tarjetas Vive la Vida con regalo sorpresa (intenta web, fallback a lista)
 if(c.cat==='vive'&&c.regalo){
 const regalo=VIVE_REGALOS[Math.floor(Math.random()*VIVE_REGALOS.length)];
-state.pts+=(c.pts||0);
+window._ptsReason='🎁 Vive la Vida';state.pts+=(c.pts||0);
 state.done.push(c.id);
 if(!state.history)state.history=[];
 state.history.push({icon:regalo.icon,text:'🎁 '+regalo.text,photo:'',pts:c.pts||0,cat:'vive',date:new Date().toLocaleDateString(),ts:Date.now()});
@@ -2605,7 +2715,7 @@ return;
 if(c.cat==='ahorro'&&SAVINGS_AMOUNT[c.id]){
 const amount=SAVINGS_AMOUNT[c.id];
 state.huchaGanada+=amount;
-state.pts+=(c.pts||0);
+window._ptsReason='💰 Ahorro';state.pts+=(c.pts||0);
 state.done.push(c.id);
 petFeed();
 save();
@@ -2669,7 +2779,6 @@ if(!pending.length){poopMode=false;return;}
 var today=new Date().toLocaleDateString();
 if(!state.poopPenaltyDay||state.poopPenaltyDay!==today){
 state.poopPenaltyDay=today;
-state.pts=Math.max(0,(state.pts||0)-5);
 save();
 }
 poopMode=true;
@@ -3645,14 +3754,14 @@ var _aiBtnEl=document.getElementById('aiBtn');if(_aiBtnEl)_aiBtnEl.addEventListe
 const ao=document.getElementById('aiOpinion');
 const btn=document.getElementById('aiBtn');
 btn.disabled=true;btn.textContent='\ud83d\udcad Buscando frase...';
-ao.style.display='block';ao.innerHTML='\u23f3 Buscando una frase motivadora...';
-const frasesLocal=['Cada peque\u00f1o paso cuenta. \u00a1Sigue as\u00ed! \ud83d\udcaa','El \u00e9xito es la suma de peque\u00f1os esfuerzos repetidos. \u2728','Hazlo con amor y el resultado brillar\u00e1. \ud83c\udf1f','La constancia vence al talento. \ud83d\ude80','Hoy mejor que ayer. \ud83c\udf31'];
+ao.style.display='block';ao.innerHTML='⏳ Buscando una frase motivadora...';
+const frasesLocal=['Cada pequeño paso cuenta. ¡Sigue así! \ud83d\udcaa','El éxito es la suma de pequeños esfuerzos repetidos. ✨','Hazlo con amor y el resultado brillará. \ud83c\udf1f','La constancia vence al talento. \ud83d\ude80','Hoy mejor que ayer. \ud83c\udf31'];
 try{
 const resp=await fetch('https://api.quotable.io/random?tags=inspirational|success|wisdom');
 if(!resp.ok)throw new Error('no');
 const data=await resp.json();
 if(data&&data.content){
-ao.innerHTML='\ud83d\udcad <b>Frase para ti:</b><br>\u201c'+data.content+'\u201d<br><span style="font-size:.75rem;color:rgba(255,255,255,.6)">\u2014 '+(data.author||'')+'</span>';
+ao.innerHTML='\ud83d\udcad <b>Frase para ti:</b><br>“'+data.content+'”<br><span style="font-size:.75rem;color:rgba(255,255,255,.6)">— '+(data.author||'')+'</span>';
 }else{throw new Error('vacio');}
 }catch(err){
 ao.innerHTML='\ud83d\udcad <b>Frase para ti:</b><br>'+frasesLocal[Math.floor(Math.random()*frasesLocal.length)];
@@ -3721,7 +3830,7 @@ if(bd){bonusMult=bd.mult;bonusLabel=' '+bd.icon+' x'+bd.mult;}
 }
 ptsGained=Math.round(ptsGained*bonusMult);
 activeBonus=null;
-state.pts+=ptsGained;
+if(!window._ptsReason){var _cf=CARDS.find(function(x){return x.id===cardId;});var _cn={manualidades:'🎨 Manualidad',cocina:'🍳 Cocina',deporte:'💪 Deporte',bienestar:'🧖 Bienestar',estudio:'📚 Estudio',ahorro:'💰 Ahorro',aire:'🌳 Aire libre',declutter:'🧹 Orden',ocio:'🎮 Ocio',vive:'🧘 Vive la vida'};window._ptsReason=(_cf&&_cn[_cf.cat])?_cn[_cf.cat]:'✅ Misión';}state.pts+=ptsGained;
 var _pi=document.getElementById('previewImg');var photoData=(_pi&&_pi.src&&_pi.src.length>10)?_pi.src:'';
 if(!state.history)state.history=[];
 state.history.push({icon:window.photoCard.icon,text:window.photoCard.text,photo:photoData,pts:ptsGained,cat:window.photoCard.cat,date:new Date().toLocaleDateString(),ts:Date.now()});
@@ -3766,7 +3875,7 @@ const c=CARDS.find(x=>x.id===window.cid);
 state.done.push(window.cid);
 state.pending=state.pending.filter(id=>id!==window.cid);
 const cpts=c.pts||0;
-state.pts+=cpts;
+window._ptsReason='🛍️ Kit montado';state.pts+=cpts;
 var kitMsg='';
 if(c.kit){
 if(state.kitsComprados&&state.kitsComprados.includes(c.id)){
@@ -3797,6 +3906,7 @@ window.cid=null;
 
 try{
 load();
+window._lastPts=state.pts;
 petCheckDay();
 if(!state.unlockedRewards)state.unlockedRewards={};
 if(!state.tierStart)state.tierStart=0;
